@@ -20,6 +20,10 @@
     --light-yellow-grey:rgba(255, 221, 149, 0.16);
     --meduim-yellow-grey:#D9D2CD;
     --neutral-grey:#A4A6B3;
+    --light-grey:#DFE0EB;
+    --light-grey-blue:#DDE2FF;
+    --grey:#9FA2B4;
+    --light-grey-hover: rgba(159,162,180,.1);
 
     --white:#FDFDFF;
 }

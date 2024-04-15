@@ -11,7 +11,7 @@ html{
     color: white;
     overflow: hidden;
 }
-html, body{min-height:100%;}
+/*html, body{min-height:100%;}*/
 body{
     width: 100%;
     height: 100%;
@@ -19,16 +19,24 @@ body{
 /**************************************************************************/
 main{
     height: 100%;
+    overflow: scroll;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 4fr;
+    display: flex;
+    flex-direction: row;
+    /*
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
-    grid-row-gap: 0px;
+    grid-row-gap: 0px;*/
 }
 
 main nav{
     background-color: var(--dark-blue-grey);
+    height: 100vh;
+    width: 20%;
+    top: 0;
+    position: sticky;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 .title{
     height: 10%;
@@ -44,7 +52,7 @@ main nav{
         font-size: 24px;
     }
 }
-main nav #menu{
+main nav #menu {
     height: 100%;
     width: 100%;
     display: flex;
@@ -52,28 +60,104 @@ main nav #menu{
     align-items: center;
     justify-content: flex-start;
     list-style: none;
-    .fas{
-        font-size: 24px;
-        color: var(--neutral-grey);
-        margin: 10% 0;
-        background-image: url("/assets/icons/people.svg");
-    }
-    li{
-        height: calc(100% / 15);
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: Mulish, sans-serif;
-        font-size: 18px;
-        color: var(--neutral-grey);
-        cursor: pointer;
-        transition: 0.3s;
-        &:hover{
-            background-color: var(--meduim-blue-grey);
-        }
-    }
+}
 
+main nav #menu .fas {
+    font-size: 24px;
+    color: var(--neutral-grey);
+    margin: 10% 0;
+    background-image: url("/assets/icons/people.svg");
+}
+
+main nav #menu li {
+    height: calc(100% / 15);
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-family: Mulish, sans-serif;
+    font-size: 18px;
+    color: var(--neutral-grey);
+    cursor: pointer;
+    transition: .3s ease all;
+}
+
+main nav #menu li:hover {
+    background-color: var(--light-grey-hover);
+}
+main nav #menu li .image{
+    height: 100%;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main nav #menu li .link{
+    height: 100%;
+    width: 80%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+main nav #menu li .link a{
+    text-decoration: none;
+    color: var(--neutral-grey);
+}
+main nav #menu li:hover .link a{
+    color: var(--light-grey-blue);
+}
+
+main nav #menu li:hover .image{
+    border-left: var(--light-grey-blue) 5px solid;
+}
+
+main nav #menu li:nth-child(9){
+    border-top: #9FA2B4 1px solid;
+}
+/**************************************************************************/
+
+main .main_content{
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    width: 80%;
+    height: 120%;
+    background-color: white;
+    margin-bottom: 10px;
+}
+
+main .main_content .header{
+    height: 5%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2%;
+}
+main .main_content .header h2{
+    font-family: Roboto, sans-serif;
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+main .main_content .header .user{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+main .main_content .header .user img{
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+main .main_content .header .user p{
+    font-family: Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--dark-blue-grey);
 }
 
 
