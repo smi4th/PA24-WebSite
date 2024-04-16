@@ -15,7 +15,7 @@
     align-items: center;
 }
 .section:nth-child(1){
-    height: 10%;
+    height: 20%;
 
     .stat_card{
         display: flex;
@@ -53,7 +53,7 @@
     }
 }
 .section:nth-child(2){
-    height: 40%;
+    height: 90%;
     .second_stat {
         display: grid;
         grid-template-columns: 3fr 1fr;

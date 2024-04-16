@@ -62,13 +62,6 @@ main nav #menu {
     list-style: none;
 }
 
-main nav #menu .fas {
-    font-size: 24px;
-    color: var(--neutral-grey);
-    margin: 10% 0;
-    background-image: url("/assets/icons/people.svg");
-}
-
 main nav #menu li {
     height: calc(100% / 15);
     width: 100%;
@@ -115,6 +108,89 @@ main nav #menu li:hover .image{
 main nav #menu li:nth-child(9){
     border-top: #9FA2B4 1px solid;
 }
+
+main nav #menu li .image i {
+    width: 24px;
+    height: 24px;
+}
+/**************************************************************************/
+.statistics{
+    background-image: url("/assets/icons/not_select/statistics.svg");
+}
+
+.suggests{
+    background-image: url("/assets/icons/not_select/suggests.svg");
+}
+
+.travelers{
+    background-image: url("/assets/icons/not_select/travelers.svg");
+}
+
+.prestations{
+    background-image: url("/assets/icons/not_select/prestations.svg");
+}
+
+.prestations-companies{
+    background-image: url("/assets/icons/not_select/prestations-companies.svg");
+}
+.providers{
+    background-image: url("/assets/icons/not_select/providers.svg");
+}
+
+.supports{
+    background-image: url("/assets/icons/not_select/supports.svg");
+}
+.permissions{
+    background-image: url("/assets/icons/not_select/permissions.svg");
+}
+.settings{
+    background-image: url("/assets/icons/not_select/settings.svg");
+}
+.home{
+    background-image: url("/assets/icons/not_select/home.svg");
+}
+
+/**************************************************************************/
+main nav #menu li:hover .image i.statistics{
+    background-image: url("/assets/icons/select/statistics.svg");
+}
+
+main nav #menu li:hover .image i.suggests{
+    background-image: url("/assets/icons/select/suggests.svg");
+}
+
+main nav #menu li:hover .image i.travelers{
+    background-image: url("/assets/icons/select/travelers.svg");
+}
+
+main nav #menu li:hover .image i.prestations{
+    background-image: url("/assets/icons/select/prestations.svg");
+}
+
+main nav #menu li:hover .image i.prestations-companies{
+    background-image: url("/assets/icons/select/prestations-companies.svg");
+}
+
+main nav #menu li:hover .image i.providers{
+    background-image: url("/assets/icons/select/providers.svg");
+}
+
+main nav #menu li:hover .image i.supports{
+    background-image: url("/assets/icons/select/supports.svg");
+}
+
+main nav #menu li:hover .image i.permissions{
+    background-image: url("/assets/icons/select/permissions.svg");
+}
+
+main nav #menu li:hover .image i.settings{
+    background-image: url("/assets/icons/select/settings.svg");
+}
+
+main nav #menu li:hover .image i.home{
+    background-image: url("/assets/icons/select/home.svg");
+}
+
 /**************************************************************************/
 
 main .main_content{
@@ -122,13 +198,13 @@ main .main_content{
     overflow: hidden;
     flex-direction: column;
     width: 80%;
-    height: 120%;
+    height: 160%;
     background-color: white;
     margin-bottom: 10px;
 }
 
 main .main_content .header{
-    height: 5%;
+    height: 10%;
     width: 100%;
     display: flex;
     justify-content: space-between;

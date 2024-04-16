@@ -17,7 +17,7 @@
         <ul id="menu">
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="statistics"></i>
                 </div>
                 <div class="link">
                     <a href="/statistics">Statistiques</a>
@@ -25,7 +25,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="suggests"></i>
                 </div>
                 <div class="link">
                     <a href="/suggests">Suggestions</a>
@@ -33,7 +33,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="travelers"></i>
                 </div>
                 <div class="link">
                     <a href="/travelers">Voyageurs</a>
@@ -41,7 +41,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="prestations"></i>
                 </div>
                 <div class="link">
                     <a href="/prestations">Prestataires</a>
@@ -49,7 +49,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="prestations-companies"></i>
                 </div>
                 <div class="link">
                     <a href="/prestations-companies">Entreprises prestataires</a>
@@ -57,7 +57,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="providers"></i>
                 </div>
                 <div class="link">
                     <a href="/providers">Bailleurs</a>
@@ -65,7 +65,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="supports"></i>
                 </div>
                 <div class="link">
                     <a href="/supports">Support</a>
@@ -73,7 +73,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="permissions"></i>
                 </div>
                 <div class="link">
                     <a href="/permissions">Permissions</a>
@@ -81,7 +81,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="settings"></i>
                 </div>
                 <div class="link">
                     <a href="/settings">Paramètres</a>
@@ -89,7 +89,7 @@
             </li>
             <li>
                 <div class="image">
-                    <img src="{{asset("assets/icons/people.svg")}}" alt="icon"/>
+                    <i class="home"></i>
                 </div>
                 <div class="link">
                     <a href="/">Accueil</a>
