@@ -1,12 +1,10 @@
-FROM ubuntu 
+FROM httpd:2.4
 
-RUN apt update
-RUN apt install apache2 -y 
+# Copy the files from the host to the container
+COPY . .
 
-RUN apt install apache2-utils -y 
-
-RUN apt clean
-
+# Expose the port the app runs in
 EXPOSE 80
 
-CMD [“apache2ctl”, “-D”, “FOREGROUND”]
+# Serve the app
+CMD ["httpd", "-D", "FOREGROUND"]
