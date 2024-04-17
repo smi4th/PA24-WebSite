@@ -1,0 +1,18 @@
+on: [push]
+
+jobs:
+  newImage:
+    runs-on: self-hosted
+    name: Create a new image 
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Use the output from the `hello` step
+      - name: Create a new image
+        run: docker build -t web-container .
+      - name: Update the Traefik configuration
+        run: cd /var/reverse-proxy && docker compose up -d --scale web=0 && docker compose up -d --scale web=3
+      - name: Remove the old images
+        run: docker rmi `docker images --filter dangling=true -q`
