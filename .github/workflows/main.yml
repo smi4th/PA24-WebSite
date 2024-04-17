@@ -14,3 +14,5 @@ jobs:
         run: docker build -t web-container .
       - name: Update the Traefik configuration
         run: cd /var/reverse-proxy && docker compose up -d --scale web=0 && docker compose up -d --scale web=3
+      - name: Remove the old images
+        run: docker rmi `docker images --filter dangling=true -q`
