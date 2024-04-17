@@ -1,7 +1,12 @@
-FROM php:8.2-cli
+FROM ubuntu 
 
-COPY . /usr/src/myapp
+RUN apt update
+RUN apt install –y apache2 
 
-WORKDIR /usr/src/myapp
+RUN apt install –y apache2-utils 
 
-CMD [ "php", "index.php" ]
+RUN apt clean
+
+EXPOSE 80
+
+CMD [“apache2ctl”, “-D”, “FOREGROUND”]

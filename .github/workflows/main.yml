@@ -9,6 +9,8 @@ jobs:
       # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v4
+      - name: delete of the old image
+        run: docker rmi -f $(docker images -q)
       # Use the output from the `hello` step
       - name: Create a new image
         run: docker build -t web-container .
