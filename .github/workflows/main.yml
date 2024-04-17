@@ -13,4 +13,4 @@ jobs:
       - name: Create a new image
         run: docker build -t web-container .
       - name: Run the container
-        run: docker run -d -p 80:80 --name web web-container
+        run: docker run --name web -d -p 80:80 web-container:lastest
