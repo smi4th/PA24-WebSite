@@ -13,4 +13,4 @@ jobs:
       - name: Create a new image
         run: docker build -t web-container .
       - name: Update the Traefik configuration
-        run: docker compose up -d --configFile=/var/reverse-proxy/docker-compose.yml --scale web=0 && docker compose up -d  --configFile=/var/reverse-proxy/docker-compose.yml --scale web=3
+        run: cd /var/reverse-proxy && docker compose up -d --scale web=0 && docker compose up -d --scale web=3
