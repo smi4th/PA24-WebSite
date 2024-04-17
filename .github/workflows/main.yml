@@ -12,5 +12,5 @@ jobs:
       # Use the output from the `hello` step
       - name: Create a new image
         run: docker build -t web-container .
-      - name: Run the container
-        run: docker run --name web -d -p 8081:80 web-container:latest
+      - name: Update the Traefik configuration
+        run: docker compose up -d --scale web=0 && docker compose up -d --scale web=3
