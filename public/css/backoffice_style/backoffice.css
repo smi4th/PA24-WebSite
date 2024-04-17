@@ -1,4 +1,4 @@
-@import "var.css";
+@import "../var.css";
 
 *{
     margin: 0;
@@ -204,7 +204,7 @@ main .main_content{
 }
 
 main .main_content .header{
-    height: 10%;
+    height: 5%;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -236,6 +236,14 @@ main .main_content .header .user p{
     color: var(--dark-blue-grey);
 }
 
+.main_section{
+    height: 100%;
+    width: 100%;
+    padding: 0 2%;
+    gap: 2%;
+    display: flex;
+    flex-direction: column;
+}
 
 
 

@@ -2,10 +2,13 @@
 <html>
 <head>
     <title>Backoffice</title>
-    <link rel="stylesheet" href="{{ asset('css/backoffice.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/backoffice_style/backoffice.css') }}">
+
     @include($file_path ?? 'backoffice.index')
-    @if($stack_name !== null)
-        @stack($stack_name)
+
+    @if($stack_css !== null)
+
+        @stack($stack_css)
     @endif
 </head>
 <body>
@@ -108,7 +111,9 @@
                 <p>Patate enjoyer</p>
             </div>
         </div>
-        @yield('content')
+        <div class="main_section">
+            @yield('content')
+        </div>
     </div>
 </main>
 </body>

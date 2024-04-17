@@ -1,13 +1,6 @@
-@import "var.css";
+@import "../var.css";
 
-.main_section{
-    height: 100%;
-    width: 100%;
-    padding: 0 2%;
-    gap: 2%;
-    display: flex;
-    flex-direction: column;
-}
+
 .section{
     width: 100%;
     display: flex;

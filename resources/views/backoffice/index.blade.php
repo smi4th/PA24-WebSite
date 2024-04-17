@@ -1,10 +1,10 @@
 
 @push('styles_index')
-    <link rel="stylesheet" href="{{ asset('css/backoffice_accueil.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/backoffice_style/backoffice_accueil.css') }}">
 @endpush
 
 @section('content')
-<div class="main_section">
+
     <div class="section">
         <ul class="stat_card">
             <li>
@@ -117,5 +117,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

@@ -10,9 +10,6 @@ Route::get('/', function () {
 Route::prefix('/backoffice')->controller(BackOfficeController::class)->group(function () {
 
     Route::get('/', 'index');
-
-    Route::get('/{any}',"index")->where('any', '.*');
-
     Route::get('/statistics', 'statistics');
     Route::get('/suggests', 'suggests');
     Route::get('/travelers', 'travelers');
@@ -22,4 +19,6 @@ Route::prefix('/backoffice')->controller(BackOfficeController::class)->group(fun
     Route::get('/supports', 'supports');
     Route::get('/permissions', 'permissions');
     Route::get('/settings', 'settings');
+
+    Route::get('/{any}','index')->where('any', '.*');
 });
