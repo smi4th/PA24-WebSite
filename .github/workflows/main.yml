@@ -1,19 +1,18 @@
 on: [push]
 
 jobs:
-  hello_world_job:
+  newImage:
     runs-on: self-hosted
-    name: A job to say hello
+    name: Create a new image 
     steps:
       # To use this repository's private action,
       # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Hello world action step
-        uses: ./ # Uses an action in the root directory
-        id: hello
-        with:
-          who-to-greet: 'Mona the Octocat'
+      - name: delete of the old image
+        run: docker rmi -f $(docker images -q)
       # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+      - name: Create a new image
+        run: docker build -t web-container .
+      - name: Run the container
+        run: docker run -d -p 8080:80 --name web web-container

@@ -1,8 +1,7 @@
-# Container image that runs your code
-FROM alpine:3.10
+FROM php:8.2-cli
 
-# Copies your code file from your action repository to the filesystem path `/` of the container
-COPY entrypoint.sh /entrypoint.sh
+COPY . /usr/src/myapp
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["/entrypoint.sh"]
+WORKDIR /usr/src/myapp
+
+CMD [ "php", "index.php" ]
