@@ -1,3 +1,3 @@
 @section('content')
-    <h1 style="color:red">OK</h1>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @endsection

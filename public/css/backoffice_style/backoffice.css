@@ -52,6 +52,7 @@ main nav{
         font-size: 24px;
     }
 }
+
 main nav #menu {
     height: 100%;
     width: 100%;
@@ -60,6 +61,7 @@ main nav #menu {
     align-items: center;
     justify-content: flex-start;
     list-style: none;
+    padding: 0;
 }
 
 main nav #menu li {
@@ -150,6 +152,10 @@ main nav #menu li .image i {
     background-image: url("/assets/icons/not_select/home.svg");
 }
 
+.start{
+    background-image: url("/assets/icons/not_select/start.svg");
+
+}
 /**************************************************************************/
 main nav #menu li:hover .image i.statistics{
     background-image: url("/assets/icons/select/statistics.svg");
@@ -191,6 +197,9 @@ main nav #menu li:hover .image i.home{
     background-image: url("/assets/icons/select/home.svg");
 }
 
+main nav #menu li:hover .image i.start{
+    background-image: url("/assets/icons/select/start.svg");
+}
 /**************************************************************************/
 
 main .main_content{
@@ -210,6 +219,7 @@ main .main_content .header{
     justify-content: space-between;
     align-items: center;
     padding: 0 2%;
+    margin-bottom: 1%;
 }
 main .main_content .header h2{
     font-family: Roboto, sans-serif;
@@ -233,6 +243,7 @@ main .main_content .header .user p{
     font-family: Roboto, sans-serif;
     font-weight: 500;
     font-size: 18px;
+    margin: 0;
     color: var(--dark-blue-grey);
 }
 

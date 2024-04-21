@@ -1,8 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@100;300;400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Scope+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Maitree:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Maitree:wght@100;300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Khula:wght@100;300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abel:wght@100;300;400;500;700&display=swap');
+
 
 :root {
     --primary-color:#FF9843;

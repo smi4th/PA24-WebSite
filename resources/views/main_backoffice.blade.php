@@ -3,7 +3,7 @@
 <head>
     <title>Backoffice</title>
     <link rel="stylesheet" href="{{ asset('css/backoffice_style/backoffice.css') }}">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     @include($file_path ?? 'backoffice.index')
 
     @if($stack_css !== null)
@@ -20,10 +20,18 @@
         <ul id="menu">
             <li>
                 <div class="image">
+                    <i class="start"></i>
+                </div>
+                <div class="link">
+                    <a href="/backoffice">Accueil</a>
+                </div>
+            </li>
+            <li>
+                <div class="image">
                     <i class="statistics"></i>
                 </div>
                 <div class="link">
-                    <a href="/statistics">Statistiques</a>
+                    <a href="/backoffice/statistics">Statistiques</a>
                 </div>
             </li>
             <li>
@@ -31,7 +39,7 @@
                     <i class="suggests"></i>
                 </div>
                 <div class="link">
-                    <a href="/suggests">Suggestions</a>
+                    <a href="/backoffice/suggests">Suggestions</a>
                 </div>
             </li>
             <li>
@@ -39,7 +47,7 @@
                     <i class="travelers"></i>
                 </div>
                 <div class="link">
-                    <a href="/travelers">Voyageurs</a>
+                    <a href="/backoffice/travelers">Voyageurs</a>
                 </div>
             </li>
             <li>
@@ -47,7 +55,7 @@
                     <i class="prestations"></i>
                 </div>
                 <div class="link">
-                    <a href="/prestations">Prestataires</a>
+                    <a href="/backoffice/prestations">Prestataires</a>
                 </div>
             </li>
             <li>
@@ -55,7 +63,7 @@
                     <i class="prestations-companies"></i>
                 </div>
                 <div class="link">
-                    <a href="/prestations-companies">Entreprises prestataires</a>
+                    <a href="/backoffice/prestations-companies">Entreprises prestataires</a>
                 </div>
             </li>
             <li>
@@ -63,7 +71,7 @@
                     <i class="providers"></i>
                 </div>
                 <div class="link">
-                    <a href="/providers">Bailleurs</a>
+                    <a href="/backoffice/providers">Bailleurs</a>
                 </div>
             </li>
             <li>
@@ -71,7 +79,7 @@
                     <i class="supports"></i>
                 </div>
                 <div class="link">
-                    <a href="/supports">Support</a>
+                    <a href="/backoffice/supports">Support</a>
                 </div>
             </li>
             <li>
@@ -79,7 +87,7 @@
                     <i class="permissions"></i>
                 </div>
                 <div class="link">
-                    <a href="/permissions">Permissions</a>
+                    <a href="/backoffice/permissions">Permissions</a>
                 </div>
             </li>
             <li>
@@ -87,7 +95,7 @@
                     <i class="settings"></i>
                 </div>
                 <div class="link">
-                    <a href="/settings">Paramètres</a>
+                    <a href="/backoffice/settings">Paramètres</a>
                 </div>
             </li>
             <li>
@@ -95,7 +103,7 @@
                     <i class="home"></i>
                 </div>
                 <div class="link">
-                    <a href="/">Accueil</a>
+                    <a href="/backoffice/">Accueil</a>
                 </div>
             </li>
 

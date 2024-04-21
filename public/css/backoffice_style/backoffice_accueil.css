@@ -74,7 +74,8 @@
                 flex-direction: column;
                 align-items: center;
                 border-left: var(--light-grey) 2px solid;
-
+                padding: 0;
+                margin: 0;
                 li{
                     height: 100%;
                     width: 100%;
@@ -160,6 +161,8 @@
                 justify-content: space-evenly;
                 flex-direction: column;
                 align-items: center;
+                padding: 0;
+                margin: 0;
 
                 li{
                     width: 100%;
