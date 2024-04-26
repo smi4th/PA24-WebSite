@@ -105,8 +105,44 @@
 
         </div>
     </section>
+    <section>
+        <div class="section_title">
+            <h1>Les profils</h1>
+            <h2>Quelques soient votre profil, nous avons ce qu'il vous faut</h2>
+        </div>
+        <div class="profiles">
+            <div class="profiles_content">
+                <div class="profile_item">
+                    <img src="{{ asset('/assets/images/bailleurs.png') }}" alt="Paris">
+                    <h3>Bailleurs</h3>
+                </div>
+                <div class="profile_item">
+                    <img src="{{ asset('/assets/images/prestataires.png') }}" alt="Lyon">
+                    <h3>Prestataires</h3>
+                </div>
+                <div class="profile_item">
+                    <img src="{{ asset('/assets/images/voyageurs.png') }}" alt="Marseille">
+                    <h3>Voyageurs</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="section_title">
+            <h1>La newsletter</h1>
+            <h2>Pour être tenu à jour des dernières nouveautés et des offres en cours</h2>
+        </div>
+        <div class="newsletter_layout">
+            <div class="newsletter">
+                <form action="">
+                    <input type="email" name="email" id="email" placeholder="Votre adresse email">
+                    <button type="submit">S'abonner</button>
+                </form>
+            </div>
+        </div>
+    </section>
 </main>
-<footer>je suis un footer !</footer>
+<x-footer/>
 </body>
 
 </html>

@@ -12,7 +12,6 @@ class BackOfficeController extends Controller
     /*
      * Controller du backoffice qui gère les routes du backoffice
      * et les données à afficher sur les pages du backoffice
-     *
      */
 
     var string $view_path = "backoffice.";

@@ -1,0 +1,93 @@
+@import "var.css";
+header{
+    background-color: white;
+    border-bottom: 1px solid var(--light-grey);
+    height: clamp(10vh, 100%, 15vh);
+    width: 100%;
+}
+
+nav{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+
+    .logo{
+        width: 20%;
+        height: 100%;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        gap: 5%;
+        img{
+            width: 35%;
+            height: 35%;
+        }
+    }
+    .menu{
+        width: 60%;
+        height: 100%;
+        ul{
+            list-style: none;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+
+            li{
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                a{
+                    text-decoration: none;
+                    color: white;
+                    font-family: "Abel", sans-serif;
+                    font-size: 1.5em;
+                    font-weight: 100;
+                    transition: 0.3s;
+                    &:hover{
+                        color: var(--opposite-color-secondary);
+                    }
+                }
+            }
+            li.dark a{
+                color: var(--dark-blue-grey);
+            }
+        }
+    }
+    .cta{
+        width: 20%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        padding-right: 1%;
+
+        button{
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: "Roboto", sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    }
+    .profile{
+        width: 20%;
+        height: 100%;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        img{
+            width: 35%;
+            height: 65%;
+            border-radius: 50%;
+        }
+    }
+}

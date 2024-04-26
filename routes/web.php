@@ -6,6 +6,9 @@ use App\Http\Controllers\BackOfficeController;
 Route::get('/', function () {
     return view('landing');
 });
+Route::get('/login', function () {
+    return view('auth.login');
+});
 
 Route::prefix('/backoffice')->controller(BackOfficeController::class)->group(function () {
 
