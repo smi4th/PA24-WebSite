@@ -3,42 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Login page</title>
-    <style>
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html{
-            width: 100vw;
-            overflow: scroll;
-        }
-        /*html, body{min-height:100%;}*/
-        body{
-            width: 100%;
-            height: 100vh;
-            min-height: 100vh;
-        }
-        main{
-            width: 100vw;
-            height: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body>
-    <x-header :connected="true" :light="false" :profile="true" />
     <main>
-
-        <h1>Lorem Ipsum</h1>
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget nunc ultrices
-            fermentum. Nullam nec nisl nec nunc ultrices fermentum. Nullam nec nisl nec nunc ultrices
-            fermentum. Nullam nec nisl nec nunc ultrices fermentum. Nullam nec nisl nec nunc ultrices
-            fermentum. Nullam nec nisl nec nunc ultrices fermentum. Nullam nec nisl nec nunc ultrices
-            fermentum. Nullam nec nisl nec nunc ultrices fermentum. Nullam nec nisl nec nunc ultrices
-            fermentum. Nullam nec nisl nec nunc ultrices fermentum. Nullam nec nisl nec nunc ultrices
-        </p>
+        <div class="layout">
+            <div class="title">
+                <h1>Espace connexion</h1>
+                <h3>Re bonjour, ravi de vous revoir</h3>
+            </div>
+            <form action="/" method="post">
+                @method('POST')
+                @csrf
+                <div class="input">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="input">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div class="forgot">
+                    <a href="/">Mot de passe oublié ?</a>
+                </div>
+                <div class="input_cta">
+                    <button type="submit">Se connecter</button>
+                </div>
+            </form>
+            <div class="cta">
+                <p>Vous n'avez pas de compte ? <a href="/register">Vener nous rejoindre</a></p>
+            </div>
+        </div>
     </main>
-    <x-footer/>
 </body>
 </html>
