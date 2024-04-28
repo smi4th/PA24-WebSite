@@ -114,13 +114,14 @@ class BackOfficeController extends Controller
          * Ne pas oublier de rajouter des commentaires pour expliquer le code
          * ne pas oublier le clean Code, en cas de question => discord du Riri
          * @return View
-         */
+
         error_log("travelers");
         return view('main_backoffice', [
             'file_path' => $this->view_path . "travelers",
             'stack_css' => 'styles_travelers'
         ]);
-        /*
+         */
+
         $request->validate([
             'page' => 'required|integer',
         ]);
@@ -155,7 +156,8 @@ class BackOfficeController extends Controller
         function ($exception) {
             error_log($exception->getMessage());
         });
-        $promise->wait();*/
+        $promise->wait();
+
     }
 
     public function prestations(): View

@@ -2,13 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BackOfficeController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return view('landing');
 });
-Route::get('/login', function () {
-    return view('auth.login');
-});
+
+//group auth routes
+
+Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/login', [AuthController::class, 'checkLogin']);
+
+Route::get('/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/register', [AuthController::class, 'checkRegister']);
 
 Route::prefix('/backoffice')->controller(BackOfficeController::class)->group(function () {
 
