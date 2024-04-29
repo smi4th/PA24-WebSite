@@ -13,52 +13,42 @@
             <h1>Espace inscription</h1>
             <h3>Bonjour, ravi de vous voir</h3>
         </div>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <form action="{{route('auth.register')}}" method="post">
             @method('POST')
             @csrf
-
             <div class="input">
                 <label for="firstname">Prénom</label>
                 <input type="text" name="firstname" id="firstname" value="{{ old('firstname') }}">
-                @error('firstname')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </div>
             <div class="input">
                 <label for="lastname">Nom</label>
                 <input type="text" name="lastname" id="lastname" value="{{ old('lastname') }}">
-                @error('lastname')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </div>
             <div class="input">
                 <label for="username">Nom d'utilisateur</label>
                 <input type="text" name="username" id="username" value="{{ old('username') }}">
-                @error('username')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </div>
 
             <div class="input">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" value="{{ old('email') }}">
-                @error('email')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </div>
             <div class="input">
                 <label for="password">Mot de passe</label>
                 <input type="password" name="password" id="password">
-                @error('password')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </div>
             <div class="input">
                 <label for="password_confirmation">Confirmer le mot de passe</label>
                 <input type="password" name="password_confirmation" id="password_confirmation">
-                @error('password_confirmation')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </div>
 
                 <div class="input">
@@ -68,17 +58,11 @@
                             <option value="{{$account->id}}">{{$account->title}}</option>
                         @endforeach
                     </select>
-                    @error('account_type')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
                 </div>
 
             <div class="input_cta">
                 <button type="submit">Inscription</button>
             </div>
-            @error('title')
-            <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
         </form>
     </div>
 </main>

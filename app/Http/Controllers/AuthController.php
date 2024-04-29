@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,6 +18,9 @@ class AuthController extends Controller
     public function checkLogin(LoginRequest $request)
     {
         $dataInput = $request->validated();
+        //vérfie si les données sont correctes
+
+
         $client = new Client();
         $response = $client->post( env("API_URL") . '/login', [
             'form_params' => [
@@ -65,5 +69,34 @@ class AuthController extends Controller
             ]);
         }
         return view('auth.register', ['data'=>$responseBody]);
+    }
+    function checkRegister(RegisterRequest $request)
+    {
+        $dataInput = $request->validated();
+        $client = new Client();
+        $response = $client->post( env("API_URL") . '/register', [
+            'form_params' => [
+                'name' => $dataInput['name'],
+                'email' => $dataInput['email'],
+                'password' => $dataInput['password'],
+                'password_confirmation' => $dataInput['password_confirmation'],
+                'firstname' => $dataInput['firstname'],
+                'lastname' => $dataInput['lastname'],
+                'account_type' => $dataInput['account_type'],
+            ]
+        ]);
+        $responseBody = json_decode($response->getBody()->getContents(), true);
+        if ($response->getStatusCode() === 200) {
+            return redirect('/login', 302, [], true)->with('success', 'Register success!');
+        }
+        return to_route('auth.register')->withErrors([
+            "name" => $responseBody['message'],
+            "email" => $responseBody['message'],
+            "password" => $responseBody['message'],
+            "password_confirmation" => $responseBody['message'],
+            "firstname" => $responseBody['message'],
+            "lastname" => $responseBody['message'],
+            "account_type" => $responseBody['message'],
+        ])->onlyInput('name', 'email','firstname', 'lastname', 'account_type');
     }
 }

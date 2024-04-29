@@ -41,6 +41,7 @@ class BackOfficeController extends Controller
          * @return View
          */
         error_log("index");
+
         return view('main_backoffice', [
             'file_path' => $this->view_path . "index",
             'stack_css' => 'styles_index'

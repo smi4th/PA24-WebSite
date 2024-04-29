@@ -13,22 +13,25 @@
                 <h1>Espace connexion</h1>
                 <h3>Re bonjour, ravi de vous revoir</h3>
             </div>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form action="{{route('auth.login')}}" method="post">
                 @method('POST')
                 @csrf
                 <div class="input">
                     <label for="email">Email</label>
                     <input type="email" name="email" id="email" value="{{ old('email') }}">
-                    @error('email')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
                 </div>
                 <div class="input">
                     <label for="password">Mot de passe</label>
                     <input type="password" name="password" id="password">
-                    @error('password')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
                 </div>
                 <div class="forgot">
                     <a href="/">Mot de passe oublié ?</a>
@@ -36,9 +39,6 @@
                 <div class="input_cta">
                     <button type="submit">Se connecter</button>
                 </div>
-                @error('title')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
             </form>
             <div class="cta">
                 <p>Vous n'avez pas de compte ? <a href="{{route("auth.register")}}">Vener nous rejoindre</a></p>
