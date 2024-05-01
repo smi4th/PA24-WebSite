@@ -20,9 +20,8 @@ class AuthController extends Controller
         $dataInput = $request->validated();
         //vérfie si les données sont correctes
 
-
         $client = new Client();
-        $response = $client->post( env("API_URL") . '/login', [
+        $response = $client->post( env("API_URL") . 'login', [
             'form_params' => [
                 'email' => $dataInput['email'],
                 'password' => $dataInput['password'],
@@ -35,7 +34,7 @@ class AuthController extends Controller
 
             return redirect('/landing', 302, [], true)->with('success', 'Login success!');
         }
-        return to_route('auth.login')->withErrors([
+        return redirect('auth.login')->with([
            "email" => "Credentials wrong",
             "password" => "Credentials wrong"
         ])->onlyInput('email');

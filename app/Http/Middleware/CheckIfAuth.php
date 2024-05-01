@@ -15,7 +15,6 @@ class CheckIfAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        error_log('CheckIfAuth');
         if (!$request->session()->has('auth')) {
             return response()->view('error', [
                 'message' => 'You must login first!',

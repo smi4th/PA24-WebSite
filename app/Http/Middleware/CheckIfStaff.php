@@ -15,6 +15,9 @@ class CheckIfStaff
      */
     public function handle(Request $request, Closure $next): Response
     {
+        /*
+         * Cette fonction doit être mis à jour pour voir comment bien faire le check du staff
+         */
         if (!$request->session()->has('auth') && !$request->session()->has('staff')) {
             return response()->view('error', [
                 'message' => 'You must login first!',

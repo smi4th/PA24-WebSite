@@ -15,9 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        //dd($exceptions);
+
         $exceptions->render(function (Throwable $e) {
-            return response()->view('errors', [
-                'message' => $e->getMessage(),
+            //if app is in debug mode, show the exception
+            if (config('app.debug')) {
+                return null;
+            }
+            return response()->view('error', [
+                'message' => 'Error occurred!',
                 'code' => $e->getCode()
             ], 500);
         });
