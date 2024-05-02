@@ -22,8 +22,10 @@ class AuthController extends Controller
 
         $client = new Client();
         $response = $client->post( env("API_URL") . 'login', [
+            'body'=>[
                 'email' => $dataInput['email'],
                 'password' => $dataInput['password']
+            ]
         ]);
         $responseBody = json_decode($response->getBody()->getContents(), true);
         if ($response->getStatusCode() === 201) {
