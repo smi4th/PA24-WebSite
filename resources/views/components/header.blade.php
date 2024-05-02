@@ -1,4 +1,9 @@
 <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+@props([
+    'connected' => false,
+    'profile' => false,
+    'light' => false
+])
 <header>
     <nav>
         <div class="logo">

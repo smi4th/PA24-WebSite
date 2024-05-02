@@ -11,14 +11,14 @@ class Header extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public $connected, public $light, public $profile)
+    public function __construct(public $connected = false, public $light, public $profile)
     {
         /**
          * $connected : savoir si on affiche le header connecté ou non avec photo de profil
          * $light : savoir si on affiche le header en mode light ou dark
          * $profile : si c'est le header de la page profil
          */
-
+        //dd($connected,$light,$profile);
         $this->connected = $connected == null ? false : $connected;
         $this->light = $light == null ? false : $light;
         $this->profile = $profile == null ? false : $profile;
