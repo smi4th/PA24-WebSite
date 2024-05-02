@@ -19,6 +19,7 @@ class AuthController extends Controller
     {
         $dataInput = $request->validated();
         //vérfie si les données sont correctes
+        dd($dataInput);
         $headers = [
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer token'
