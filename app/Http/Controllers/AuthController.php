@@ -19,14 +19,19 @@ class AuthController extends Controller
     {
         $dataInput = $request->validated();
         //vérfie si les données sont correctes
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer token'
+        ];
+
+        $body = '{
+            "email" => $dataInput["email"],
+            "password" => $dataInput["password"]
+        }';
 
         $client = new Client();
-        $response = $client->post( env("API_URL") . 'login', [
-            'form_params'=>[
-                'email' => $dataInput['email'],
-                'password' => $dataInput['password']
-            ]
-        ]);
+        $response = $client->post( env("API_URL") . 'login',$headers,$body);
+
         $responseBody = json_decode($response->getBody()->getContents(), true);
         if ($response->getStatusCode() === 201) {
             $request->session()->regenerate();
