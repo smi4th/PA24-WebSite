@@ -22,7 +22,7 @@ class AuthController extends Controller
 
         $client = new Client();
         $response = $client->post( env("API_URL") . 'login', [
-            'body'=>[
+            'form_params'=>[
                 'email' => $dataInput['email'],
                 'password' => $dataInput['password']
             ]
