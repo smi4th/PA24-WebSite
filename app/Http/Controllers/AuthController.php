@@ -22,17 +22,15 @@ class AuthController extends Controller
 
         $client = new Client();
         $response = $client->post( env("API_URL") . 'login', [
-            'form_params' => [
                 'email' => $dataInput['email'],
-                'password' => $dataInput['password'],
-            ]
+                'password' => $dataInput['password']
         ]);
         $responseBody = json_decode($response->getBody()->getContents(), true);
-        if ($response->getStatusCode() === 200) {
+        if ($response->getStatusCode() === 201) {
             $request->session()->regenerate();
             $request->session()->put('token', $responseBody['token']);
 
-            return redirect('/landing', 302, [], true)->with('success', 'Login success!');
+            return redirect('/landing', 302, [], true)->with('success', $responseBody['message']);
         }
         return redirect('auth.login')->with([
            "email" => "Credentials wrong",

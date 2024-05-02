@@ -16,7 +16,7 @@
                 </div>
                 <div class="menu">
                     <ul>
-                        <li><a href="#">Voyager</a></li>
+                        <li><a href="/main_travel_page">Voyager</a></li>
                         <li><a href="#">Prestation</a></li>
                         <li><a href="#">Louer</a></li>
                         <li><a href="#">Avis</a></li>

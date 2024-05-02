@@ -34,3 +34,7 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOff
 
     Route::get('/{any}','index')->where('any', '.*');
 });
+
+Route::get('/main_travel_page', function () {
+    return view('main_travel_page');
+});
