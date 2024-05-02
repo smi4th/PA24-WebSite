@@ -18,38 +18,48 @@ class AuthController extends Controller
     public function checkLogin(LoginRequest $request)
     {
         $dataInput = $request->validated();
-        //vérfie si les données sont correctes
-        dd($dataInput);
+
         $headers = [
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer token'
         ];
+        $body = [
+            'email' => $dataInput['email'],
+            'password' => $dataInput['password']
+        ];
 
-        $body = '{
-            "email" => $dataInput["email"],
-            "password" => $dataInput["password"]
-        }';
+        try{
+            $client = new Client();
 
-        $client = new Client();
-        $response = $client->post( env("API_URL") . 'login',$headers,$body);
+            $response = $client->post(env("API_URL") . 'login', [
+                'headers' => $headers,
+                'json' => $body
+            ]);
 
-        $responseBody = json_decode($response->getBody()->getContents(), true);
-        if ($response->getStatusCode() === 201) {
-            $request->session()->regenerate();
-            $request->session()->put('token', $responseBody['token']);
+            $responseBody = json_decode($response->getBody()->getContents(), true);
 
-            return redirect('/landing', 302, [], true)->with('success', $responseBody['message']);
+            if ($response->getStatusCode() === 201) {
+                $request->session()->regenerate();
+                $request->session()->put('token', $responseBody['token']);
+                $request->session()->put('auth', true);
+
+                return redirect('/', 302, [], true)->with('success', 'Login success!');
+            }
+            return redirect('/login', 302, [], true)->withErrors([
+                "email" => $responseBody['message'],
+                "password" => $responseBody['message']
+            ])->onlyInput('email');
+        } catch (GuzzleException $e) {
+            return redirect('/login', 302, [], true)->withErrors([
+                "error" => "Error when get data"
+            ]);
         }
-        return redirect('auth.login')->with([
-           "email" => "Credentials wrong",
-            "password" => "Credentials wrong"
-        ])->onlyInput('email');
 
     }
     public function logout(Request $request)
     {
         if ($request->session()->has('token')) {
-            $client = new Client();
+            /*$client = new Client();
             $response = $client->post( env("API_URL") . '/logout', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $request->session()->get('token')
@@ -59,21 +69,30 @@ class AuthController extends Controller
                 $request->session()->forget('token');
                 $request->session()->flush();
                 return redirect('/login', 302, [], true)->with('success', 'Logout success!');
-            }
+            }*/
+            $request->session()->forget('token');
+            $request->session()->flush();
+            return redirect('/login', 302, [], true)->with('success', 'Logout success!');
         }
     }
 
     public function register() : View
     {
-        $client = new Client();
-        $response = $client->get( env("API_URL") . 'account?all=true');
-        $responseBody = json_decode($response->getBody()->getContents(), true);
-        if ($response->getStatusCode() !== 200) {
-            return redirect('/landing', 302, [], true)->withErrors([
+        try{
+            $client = new Client();
+            $response = $client->get( env("API_URL") . 'account?all=true');
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() !== 201) {
+                return redirect('/register', 302, [], true)->withErrors([
+                    "error" => "Error when get data"
+                ]);
+            }
+            return view('auth.register', ['data'=>$responseBody]);
+        }catch (GuzzleException $e) {
+            return redirect('/register', 302, [], true)->withErrors([
                 "error" => "Error when get data"
             ]);
         }
-        return view('auth.register', ['data'=>$responseBody]);
     }
     function checkRegister(RegisterRequest $request)
     {

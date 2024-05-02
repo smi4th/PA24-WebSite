@@ -24,6 +24,7 @@ class CheckIfStaff
                 'code' => 401
             ], 401);
         }
+
         return $next($request);
     }
 }

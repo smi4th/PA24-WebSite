@@ -16,6 +16,8 @@ Route::get('/error',function () {
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'checkLogin']);
 
+Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
 Route::get('/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'checkRegister']);
 
@@ -38,3 +40,8 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOff
 Route::get('/main_travel_page', function () {
     return view('main_travel_page');
 });
+
+Route::get('/profile', function () {
+    return view('profile.main_profile');
+})->middleware(CheckIfAuth::class);
+

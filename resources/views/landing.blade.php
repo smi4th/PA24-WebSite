@@ -3,12 +3,23 @@
 <head>
     <title>Accueil</title>
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <meta charset="utf-8">
 </head>
 <body>
 <main>
     <section>
-
+        @if (session('success'))
+            <div class="toast position-absolute align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('success') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
         <div class="header">
             <nav>
                 <div class="logo">
@@ -22,9 +33,15 @@
                         <li><a href="#">Avis</a></li>
                     </ul>
                 </div>
-                <div class="cta">
-                    <button onclick="window.location.href='/login'">Se connecter</button>
-                </div>
+                @if(session('auth'))
+                    <div class="cta">
+                        <button onclick="window.location.href='/profile'">Mon profil</button>
+                    </div>
+                @else
+                    <div class="cta">
+                        <button onclick="window.location.href='/login'">Se connecter</button>
+                    </div>
+                @endif
             </nav>
         </div>
         <div class="main_title">
