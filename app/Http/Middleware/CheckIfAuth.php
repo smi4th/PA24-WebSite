@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use GuzzleHttp\Client;
 
 class CheckIfAuth
 {
@@ -15,12 +16,37 @@ class CheckIfAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->session()->has('auth')) {
+        if (!$request->session()->has('token') && !$request->session()->has('auth')) {
             return response()->view('error', [
                 'message' => 'You must login first!',
                 'code' => 401
             ], 401);
         }
+        try{
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'login', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() === 200) {
+                $request->session()->put('auth', true);
+            }else{
+                $request->session()->forget('auth');
+                return response()->view('error', [
+                    'message' => 'You must login first!',
+                    'code' => 401
+                ], 401);
+            }
+
+        }catch (\Exception $e){
+            return response()->view('error', [
+                'message' => 'You must login first!',
+                'code' => 401
+            ], 401);
+        }
+
         return $next($request);
     }
 }

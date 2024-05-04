@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/components_style/header.css') }}">
 @props([
     'connected' => false,
     'profile' => false,
@@ -7,12 +7,13 @@
 <header>
     <nav>
         <div class="logo">
-            <img src="{{ asset('/assets/images/SiteLogo.svg') }}" alt="logo">
+            <img src="{{ asset('/assets/images/SiteLogo.svg') }}" alt="logo" onclick="window.location.href='/'">
         </div>
         <div class="menu">
             @if($profile == true)
                 @if($light == true)
                     <ul>
+                        <li><a href="/profile">Profil</a></li>
                         <li><a href="#">Gestion</a></li>
                         <li><a href="#">Messages</a></li>
                         <li><a href="#">Prestations</a></li>
@@ -21,6 +22,7 @@
                     </ul>
                 @else
                     <ul>
+                        <li class ="dark"><a href="/profile">Profil</a></li>
                         <li class ="dark"><a href="#">Gestion</a></li>
                         <li class ="dark"><a href="#">Messages</a></li>
                         <li class ="dark"><a href="#">Prestations</a></li>
@@ -31,6 +33,7 @@
             @else
                 @if($light == true)
                     <ul>
+                        <li><a href="/profile">Profil</a></li>
                         <li><a href="#">Voyager</a></li>
                         <li><a href="#">Prestation</a></li>
                         <li><a href="#">Louer</a></li>
@@ -38,6 +41,7 @@
                     </ul>
                 @else
                     <ul>
+                        <li class ="dark"><a href="/profile">Profil</a></li>
                         <li class ="dark"><a href="#">Voyager</a></li>
                         <li class ="dark"><a href="#">Prestation</a></li>
                         <li class ="dark"><a href="#">Louer</a></li>

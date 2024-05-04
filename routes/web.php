@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BackOfficeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckIfAuth;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('landing');
@@ -41,7 +42,7 @@ Route::get('/main_travel_page', function () {
     return view('main_travel_page');
 });
 
-Route::get('/profile', function () {
-    return view('profile.main_profile');
-})->middleware(CheckIfAuth::class);
-
+Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{any}','index')->where('any', '.*');
+});

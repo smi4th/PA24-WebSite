@@ -59,68 +59,90 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         if ($request->session()->has('token')) {
-            /*$client = new Client();
-            $response = $client->post( env("API_URL") . '/logout', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $request->session()->get('token')
-                ]
-            ]);
-            if ($response->getStatusCode() === 200) {
-                $request->session()->forget('token');
-                $request->session()->flush();
-                return redirect('/login', 302, [], true)->with('success', 'Logout success!');
-            }*/
-            $request->session()->forget('token');
-            $request->session()->flush();
-            return redirect('/login', 302, [], true)->with('success', 'Logout success!');
+            try{
+                $client = new Client();
+                $response = $client->delete( env("API_URL") . '/login', [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $request->session()->get('token')
+                    ]
+                ]);
+                if ($response->getStatusCode() === 200) {
+                    $request->session()->flush();
+                    //repasser le secure à true
+                    return redirect('/login', 302, [], false)->with('success', 'Logout success!');
+                }
+                return redirect('/', 302, [], true)->withErrors([
+                    "error" => "Error when logout"
+                ]);
+
+            }catch (GuzzleException $e) {
+                return redirect('/', 302, [], true)->withErrors([
+                    "error" => "Error when logout"
+                ]);
+            }
         }
     }
 
-    public function register() : View
+    public function register()
     {
         try{
             $client = new Client();
-            $response = $client->get( env("API_URL") . 'account?all=true');
+            $response = $client->get(env("API_URL") . 'account_type?private=false');
             $responseBody = json_decode($response->getBody()->getContents(), true);
-            if ($response->getStatusCode() !== 201) {
-                return redirect('/register', 302, [], true)->withErrors([
-                    "error" => "Error when get data"
+
+            //dd($responseBody);
+            if ($response->getStatusCode() !== 200) {
+                return view('auth.login')->withErrors([
+                    "error" => "Error when load register page"
                 ]);
             }
-            return view('auth.register', ['data'=>$responseBody]);
+            $data = $responseBody['data'];
+            return view('auth.register', ['data'=>$data]);
+
         }catch (GuzzleException $e) {
-            return redirect('/register', 302, [], true)->withErrors([
-                "error" => "Error when get data"
+            return view('auth.login')->withErrors([
+                "error" => "Error when load register page"
             ]);
         }
     }
     function checkRegister(RegisterRequest $request)
     {
-        $dataInput = $request->validated();
-        $client = new Client();
-        $response = $client->post( env("API_URL") . '/register', [
-            'form_params' => [
-                'name' => $dataInput['name'],
+        try{
+            $dataInput = $request->validated();
+            $client = new Client();
+            $body = [
+                'username' => $dataInput['username'],
                 'email' => $dataInput['email'],
                 'password' => $dataInput['password'],
-                'password_confirmation' => $dataInput['password_confirmation'],
-                'firstname' => $dataInput['firstname'],
-                'lastname' => $dataInput['lastname'],
+                'first_name' => $dataInput['firstname'],
+                'last_name' => $dataInput['lastname'],
                 'account_type' => $dataInput['account_type'],
-            ]
-        ]);
-        $responseBody = json_decode($response->getBody()->getContents(), true);
-        if ($response->getStatusCode() === 200) {
-            return redirect('/login', 302, [], true)->with('success', 'Register success!');
+            ];
+
+            $response = $client->post( env("API_URL") . 'account', [
+                'json' => $body
+            ]);
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+
+            if ($response->getStatusCode() === 201) {
+                return redirect('/login', 302, [], false)->with('success', 'Register success!');
+            }
+
+            return redirect('/register',302,[],false)->withErrors([
+                "name" => $responseBody['message'],
+                "email" => $responseBody['message'],
+                "password" => $responseBody['message'],
+                "password_confirmation" => $responseBody['message'],
+                "firstname" => $responseBody['message'],
+                "lastname" => $responseBody['message'],
+                "account_type" => $responseBody['message'],
+            ])->onlyInput('username', 'email','firstname', 'lastname', 'account_type');
+
+        }catch (GuzzleException $e) {
+            error_log($e->getMessage());
+            return redirect('/register',302,[],false)->withErrors([
+                "error" => "Error when register"
+            ])->onlyInput('username', 'email','firstname', 'lastname', 'account_type');
         }
-        return to_route('auth.register')->withErrors([
-            "name" => $responseBody['message'],
-            "email" => $responseBody['message'],
-            "password" => $responseBody['message'],
-            "password_confirmation" => $responseBody['message'],
-            "firstname" => $responseBody['message'],
-            "lastname" => $responseBody['message'],
-            "account_type" => $responseBody['message'],
-        ])->onlyInput('name', 'email','firstname', 'lastname', 'account_type');
     }
 }

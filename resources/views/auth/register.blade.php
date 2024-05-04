@@ -54,8 +54,9 @@
                 <div class="input">
                     <label for="account_type">Type de compte</label>
                     <select name="account_type" id="account_type">
+                        <option selected disabled hidden>Choisir un type de compte</option>
                         @foreach($data as $account)
-                            <option value="{{$account->id}}">{{$account->title}}</option>
+                            <option value="{{$account["uuid"]}}">{{$account["type"]}}</option>
                         @endforeach
                     </select>
                 </div>

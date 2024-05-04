@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('css/components_style/footer.css') }}">
 <footer>
     <div class="main_menu">
         <div class="footer_menu">

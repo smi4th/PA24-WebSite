@@ -1,4 +1,4 @@
-@import "var.css";
+@import "../var.css";
 header{
     background-color: white;
     border-bottom: 1px solid var(--light-grey);
@@ -21,10 +21,13 @@ nav{
         justify-content: start;
         align-items: center;
         gap: 5%;
+
         img{
             width: 35%;
             height: 35%;
+            cursor: pointer;
         }
+
     }
     .menu{
         width: 60%;
