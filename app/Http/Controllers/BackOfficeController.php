@@ -24,6 +24,7 @@ class BackOfficeController extends Controller
      * Voir pour créer des roles pour les utilisateurs
      * et pourvoir les customiser
      */
+
     public function index(): View
     {
         /*
@@ -48,7 +49,7 @@ class BackOfficeController extends Controller
         ]);
     }
 
-    public function statistics(): View
+    public function statistics(Request $request): View
     {
         /*
          * Ce commentaire est un placeholder pour expliquer ce que fait la méthode statistics
@@ -66,10 +67,88 @@ class BackOfficeController extends Controller
          * ne pas oublier le clean Code, en cas de question => discord du Riri
          * @return View
          */
+
+        $this->client = new Client();
+        $accounts = [];
+        $numberOffers = 0;
+        $numberReservations = 0;
+        $numberMessages = [];
+        $prestations = [];
+
+        //accounts
+        try{
+            $requestGetAccounts =$this->client->get(env('API_URL') . 'account?all=true', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $data = json_decode($requestGetAccounts->getBody()->getContents());
+            $accounts = $data->data;
+            $result = [];
+            foreach ($accounts as $account){
+                if (array_key_exists($account->account_type, $result)){
+                    $result[$account->account_type] += 1;
+                }else{
+                    $result[$account->account_type] = 1;
+                }
+            }
+            $accounts = $result;
+
+            $requestGetNameTypeAccount = $this->client->get(env('API_URL') . 'account_type?all=true', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $data = json_decode($requestGetNameTypeAccount->getBody()->getContents());
+            $data = $data->data;
+
+            foreach ($accounts as $key => $value){
+                foreach ($data as $account_type){
+                    if ($key == $account_type->uuid){
+                        $accounts[$account_type->type] = $value;
+                        unset($accounts[$key]);
+                    }
+                }
+            }
+        }
+        catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+
+        //numberMessages
+        try {
+            $requestGetMessages = $this->client->get(env('API_URL') . 'message?all=true', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $data = json_decode($requestGetMessages->getBody()->getContents());
+            $data = $data->data;
+            $result = [];
+            foreach ($data as $message){
+                if (array_key_exists($message->creation_date, $result)){
+                    $result[$message->creation_date] += 1;
+                }else{
+                    $result[$message->creation_date] = 1;
+                }
+            }
+            $numberMessages = $result;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+        //dd($numberMessages);
+
         error_log("statistics");
         return view('main_backoffice', [
             'file_path' => $this->view_path . "statistics",
-            'stack_css' => 'styles_statistics'
+            'stack_css' => 'styles_statistics',
+            'accounts' => json_encode($accounts, JSON_FORCE_OBJECT),
+            'numberOffers' => $numberOffers,
+            'numberReservations' => $numberReservations,
+            'numberMessages' => json_encode($numberMessages, JSON_FORCE_OBJECT),
+            'prestations' => $prestations
         ]);
     }
 
@@ -96,7 +175,7 @@ class BackOfficeController extends Controller
         return view('backoffice.suggests');
     }
 
-    public function travelers(Request $request): View
+    public function users(Request $request): View
     {
         /*
          * Ce commentaire est un placeholder pour expliquer ce que fait la méthode travelers
@@ -124,44 +203,46 @@ class BackOfficeController extends Controller
          */
 
         $request->validate([
-            'page' => 'required|integer',
+            'page' => 'integer|min:1',
         ]);
         $page = $request->input('page');
+        $page = $page ? $page : 1;
 
+        $offset = ($page - 1) * 10;
+        $limit = 10;
+        $numberPages = 0;
 
-        $this->client = new Client();
-        $requestGetAccount = new Request("GET",$_ENV['API_URL'] . '/account_type?type=voyageur', [
-            'headers' => [
-                "Authorization" => "Bearer" . $request->session()->get('token')
-            ]
-        ]);
-
-        $response = $this->client->send($requestGetAccount);
-        $data = json_decode($response->getBody()->getContents());
-        $account_type_id = $data->data[0]->id;
-
-        //attention limit et offset
-        $requestGetTravelers = new Request("GET",$_ENV['API_URL'] . '/account?account_type_id=' . $account_type_id, [
-            'headers' => [
-                "Authorization" => "Bearer " . $request->session()->get('token')
-            ]
-        ]);
-
-        $promise = $this->client->sendAsync($requestGetTravelers)->then(function ($response) {
-            $data = json_decode($response->getBody()->getContents());
-            return view('backoffice.travelers', [
-                'travelers' => $data->data,
-                //'pagination' => $data->meta->pagination
+        try{
+            $this->client = new Client();
+            $requestGetAccounts =$this->client->get(env('API_URL') . 'account?all=true&offset='.$offset.'&limit='.$limit, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
             ]);
-        },
-        function ($exception) {
-            error_log($exception->getMessage());
-        });
-        $promise->wait();
+            $data = json_decode($requestGetAccounts->getBody()->getContents());
+
+            $numberPages = round($data->total / 10);
+            $accounts = $data->data;
+
+            return view('main_backoffice', [
+                'file_path' => $this->view_path . "travelers",
+                'stack_css' => 'styles_travelers',
+                'accounts' => $accounts,
+                'numberPages' => $numberPages
+            ]);
+        }catch (\Exception $e) {
+            error_log($e->getMessage());
+            return view('main_backoffice', [
+                'file_path' => $this->view_path . "travelers",
+                'stack_css' => 'styles_travelers',
+                'accounts' => [],
+                'numberPages' => 1
+            ]);
+        }
 
     }
 
-    public function prestations(): View
+    public function staff(): View
     {
         /*
         * Ce commentaire est un placeholder pour expliquer ce que fait la méthode prestations
@@ -291,6 +372,58 @@ class BackOfficeController extends Controller
          * pour éviter une page blanche en cas de pépin
          */
         return view('backoffice');
+    }
+
+    public function updateUser(Request $request, $id, $information)
+    {
+        $body = json_decode($information, true);
+
+        try{
+            $this->client = new Client();
+            $response = $this->client->put(env('API_URL') . 'account?uuid='.$id, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ],
+                'json' => $body
+            ]);
+            $data = json_decode($response->getBody()->getContents());
+            if ($response->getStatusCode() === 200){
+                return redirect('/backoffice/users', 302, [], false)->with('success', 'User updated');
+            }
+            return redirect('/backoffice/users', 302, [], false)->withErrors([
+                "error" => $response->message
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/backoffice/users', 302, [], false)->withErrors([
+                "error" => $e->getMessage()
+            ]);
+        }
+
+    }
+
+    public function deleteUser(Request $request, $id)
+    {
+        try{
+            $this->client = new Client();
+            $response = $this->client->delete(env('API_URL') . 'account?uuid='.$id, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $data = json_decode($response->getBody()->getContents());
+            if ($response->getStatusCode() === 200){
+                return redirect('/backoffice/users', 302, [], false)->with('success', 'User deleted');
+            }
+            return redirect('/backoffice/users', 302, [], false)->withErrors([
+                "error" => $response->message
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/backoffice/users', 302, [], false)->withErrors([
+                "error" => $e->getMessage()
+            ]);
+        }
     }
 
 }

@@ -61,22 +61,22 @@ class AuthController extends Controller
         if ($request->session()->has('token')) {
             try{
                 $client = new Client();
-                $response = $client->delete( env("API_URL") . '/login', [
+                $request->session()->flush();
+                $response = $client->delete( env("API_URL") . 'login', [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $request->session()->get('token')
                     ]
                 ]);
                 if ($response->getStatusCode() === 200) {
-                    $request->session()->flush();
                     //repasser le secure à true
                     return redirect('/login', 302, [], false)->with('success', 'Logout success!');
                 }
-                return redirect('/', 302, [], true)->withErrors([
+                return redirect('/', 302, [], false)->withErrors([
                     "error" => "Error when logout"
                 ]);
 
             }catch (GuzzleException $e) {
-                return redirect('/', 302, [], true)->withErrors([
+                return redirect('/', 302, [], false)->withErrors([
                     "error" => "Error when logout"
                 ]);
             }

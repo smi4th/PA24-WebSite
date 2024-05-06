@@ -33,7 +33,8 @@ class CheckIfAuth
             if ($response->getStatusCode() === 200) {
                 $request->session()->put('auth', true);
             }else{
-                $request->session()->forget('auth');
+                $request->session()->flush();
+
                 return response()->view('error', [
                     'message' => 'You must login first!',
                     'code' => 401
@@ -41,6 +42,7 @@ class CheckIfAuth
             }
 
         }catch (\Exception $e){
+            $request->session()->flush();
             return response()->view('error', [
                 'message' => 'You must login first!',
                 'code' => 401

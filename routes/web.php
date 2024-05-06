@@ -27,8 +27,13 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOff
     Route::get('/', 'index');
     Route::get('/statistics', 'statistics');
     Route::get('/suggests', 'suggests');
-    Route::get('/travelers', 'travelers');
-    Route::get('/prestations', 'prestations');
+
+    Route::get('/users', 'users');
+    Route::get('/staff', 'staff');
+
+    Route::get('/users/{id}/edit/{information}', 'updateUser');
+    Route::get('/users/{id}/delete', 'deleteUser');
+
     Route::get('/prestations-companies', 'prestationsCompanies');
     Route::get('/providers', 'providers');
     Route::get('/supports', 'supports');
@@ -39,7 +44,7 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOff
 });
 
 Route::get('/main_travel_page', function () {
-    return view('main_travel_page');
+    return view('travel_section.main_travel_page');
 });
 
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
