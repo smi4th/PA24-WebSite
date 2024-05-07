@@ -30,12 +30,14 @@
                     @if ($key == 'uuid')
                         <td>{{ $value }}</td>
                     @else
-                        <td contenteditable="true" oned">{{ $value }}</td>
+                        <td contenteditable="true">{{ $value }}</td>
                     @endif
                 @endforeach
                 <td>
                     <button class="btn btn-primary btn-sm" onclick="editUser('{{ $user->uuid }}')">Edit</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteUser('{{ $user->uuid }}')">Delete</button>
+                    <!-- If the user is not an admin, display the promote button need to add that when the road in api is done -->
+                    <button class="btn btn-success btn-sm" onclick="promoteUser('{{ $user->uuid }}')">Promote</button>
                 </td>
             </tr>
         @endforeach
@@ -75,6 +77,10 @@
 
         function deleteUser(id) {
             window.location.href = '/backoffice/users/' + id + '/delete';
+        }
+
+        function promoteUser(id) {
+            //window.location.href = '/backoffice/users/' + id + '/promote';
         }
     </script>
     @endif

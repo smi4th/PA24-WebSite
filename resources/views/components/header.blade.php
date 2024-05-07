@@ -34,7 +34,7 @@
                 @if($light == true)
                     <ul>
                         <li><a href="/profile">Profil</a></li>
-                        <li><a href="#">Voyager</a></li>
+                        <li><a href="/travel">Voyager</a></li>
                         <li><a href="#">Prestation</a></li>
                         <li><a href="#">Louer</a></li>
                         <li><a href="#">Avis</a></li>
@@ -42,7 +42,7 @@
                 @else
                     <ul>
                         <li class ="dark"><a href="/profile">Profil</a></li>
-                        <li class ="dark"><a href="#">Voyager</a></li>
+                        <li class ="dark"><a href="/travel">Voyager</a></li>
                         <li class ="dark"><a href="#">Prestation</a></li>
                         <li class ="dark"><a href="#">Louer</a></li>
                         <li class ="dark"><a href="#">Avis</a></li>

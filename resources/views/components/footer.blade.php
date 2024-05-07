@@ -6,12 +6,14 @@
                 <li class="title_list">Paris Caretaker Services</li>
                 <li><a href="#">A propos</a></li>
                 <li><a href="#">Mention légale</a></li>
+                <li><a href="#">Contact</a></li>
             </ul>
             <ul>
                 <li class="title_list">Informations pratiques</li>
                 <li><a href="#">Politique des cookies</a></li>
                 <li><a href="#">Politique de confidentialité</a></li>
                 <li><a href="#">Plan du site</a></li>
+                <li><a href="/backoffice">Backoffice</a></li>
             </ul>
             <ul>
                 <li class="title_list">Informations pratiques</li>

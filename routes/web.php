@@ -5,6 +5,7 @@ use App\Http\Controllers\BackOfficeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckIfAuth;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LocationController;
 
 Route::get('/', function () {
     return view('landing');
@@ -43,8 +44,12 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOff
     Route::get('/{any}','index')->where('any', '.*');
 });
 
-Route::get('/main_travel_page', function () {
-    return view('travel_section.main_travel_page');
+Route::prefix('/travel')->controller(LocationController::class)->middleware(CheckIfAuth::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{id}', 'showLocation');
+    Route::get('/reservation/{id}', 'showReservation');
+    Route::post('/reservation/{id}', 'doReservation');
+    Route::get('/{any}','index')->where('any', '.*');
 });
 
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {

@@ -35,6 +35,7 @@
                     <a href="/backoffice/statistics">Statistiques</a>
                 </div>
             </li>
+            <!--
             <li>
                 <div class="image">
                     <i class="suggests"></i>
@@ -43,6 +44,7 @@
                     <a href="/backoffice/suggests">Suggestions</a>
                 </div>
             </li>
+            -->
             <li>
                 <div class="image">
                     <i class="travelers"></i>
@@ -51,6 +53,7 @@
                     <a href="/backoffice/users">Utilisateurs</a>
                 </div>
             </li>
+            <!--
             <li>
                 <div class="image">
                     <i class="prestations"></i>
@@ -75,6 +78,7 @@
                     <a href="/backoffice/providers">Bailleurs</a>
                 </div>
             </li>
+            -->
             <li>
                 <div class="image">
                     <i class="supports"></i>
@@ -104,7 +108,7 @@
                     <i class="home"></i>
                 </div>
                 <div class="link">
-                    <a href="/backoffice/">Accueil</a>
+                    <a href="/">Accueil</a>
                 </div>
             </li>
 
