@@ -4,6 +4,15 @@
 'profile' => false,
 'light' => false
 ])
+@php
+$imgPathValue = $data['data'][0]['imgPath'];
+$vide = ['NULL', '', ' '];
+if (in_array($imgPathValue, $vide)) {
+$imgPath = 'default_user.png';
+} else {
+$imgPath = $imgPathValue;
+}
+@endphp
 <header>
     <nav>
         <div class="logo">
@@ -34,7 +43,7 @@
         </div>
         @if($connected == true)
         <div class="profile">
-            <img src="{{ asset('/assets/images/default_user.png')}}" alt="profile">
+            <img src="{{ asset('/assets/images/pfp/' . $imgPath)}}" alt="profile">
         </div>
         @else
         <div class="cta">

@@ -138,7 +138,7 @@
       $(document).ready(function() {
          $('.inputbox input').click(function() {
             var inputName = $(this).attr('name');
-            if (inputname != 'news') {
+            if (inputName != 'news') {
                window.location.href = '{{ url("/profile/edit-profile") }}/' + inputName;
             }
          });

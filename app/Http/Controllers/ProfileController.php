@@ -81,16 +81,20 @@ class ProfileController extends Controller
 
     private function verifyPassword($password)
     {
-        //verifie si le mot de passe est correct
-        $client = new Client();
-        $token = session('token');
-        $dataPwd = $client->get(env("API_URL") . 'account/verifyPassword?password=' . $password, [
-            'headers' => [
-                'authorization' => 'Bearer ' . $token,
-            ]
-        ]);
-        $isPwd = json_decode($dataPwd->getBody()->getContents(), true);
-        return $isPwd['correct'];
+        try {
+            //verifie si le mot de passe est correct
+            $client = new Client();
+            $token = session('token');
+            $dataPwd = $client->get(env("API_URL") . 'account/verifyPassword?password=' . $password, [
+                'headers' => [
+                    'authorization' => 'Bearer ' . $token,
+                ]
+            ]);
+            $isPwd = json_decode($dataPwd->getBody()->getContents(), true);
+            return $isPwd['correct'];
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
     public function updateProfile(Request $request)
     {
@@ -111,18 +115,25 @@ class ProfileController extends Controller
         $url = url()->previous();
         $url = explode("/", $url);
         $field = $url[count($url) - 1];
+        $value = $request->input('name');
         if ($field == "name") {
             $field1 = "first_name";
             $field2 = "last_name";
+        } else if ($field == "password") {
+            if ($request->input('newpassword') != $request->input('newpasswordconfirm')) {
+                return redirect('/profile', 302, [], false)->withErrors(["error" => "Error : new password and confirm password are not the same"]);
+            }
+            $field = "password";
+            $value = $request->input('newpassword');
         }
 
         // Mise à jour selon le champ spécifié
         $client = new Client();
-        if ($field1 == "first_name") {
+        if (isset($field1)) {
             $body = [$field1 => $request->input('firstname'), $field2 => $request->input('lastname')];
         } else {
             //dd($field);
-            $body = [$field => $request->input('name')];
+            $body = [$field => $value];
         }
 
         try {
@@ -132,6 +143,7 @@ class ProfileController extends Controller
                 'headers' => ['authorization' => 'Bearer ' . $token],
                 'json' => $body
             ]);
+            
 
             if ($response->getStatusCode() == 200) {
                 return redirect('/profile', 302, [], false)->with('success', 'Profile updated!');

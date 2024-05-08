@@ -55,8 +55,8 @@
                 </div>
 
                 <div class="inputbox">
-                    <label for="oldpassword">Ancien {{ $nom }}</label>
-                    <input type="password" id="oldpassword" name="oldpassword" required>
+                    <label for="password">Ancien {{ $nom }}</label>
+                    <input type="password" id="password" name="password" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Valider</button>
