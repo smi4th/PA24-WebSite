@@ -1,8 +1,8 @@
 <link rel="stylesheet" href="{{ asset('css/components_style/header.css') }}">
 @props([
-    'connected' => false,
-    'profile' => false,
-    'light' => false
+'connected' => false,
+'profile' => false,
+'light' => false
 ])
 <header>
     <nav>
@@ -10,50 +10,32 @@
             <img src="{{ asset('/assets/images/SiteLogo.svg') }}" alt="logo" onclick="window.location.href='/'">
         </div>
         <div class="menu">
-            @if($profile == true)
-                @if($light == true)
-                    <ul>
-                        <li><a href="/profile">Profil</a></li>
-                        <li><a href="#">Gestion</a></li>
-                        <li><a href="#">Messages</a></li>
-                        <li><a href="#">Prestations</a></li>
-                        <li><a href="#">Planning</a></li>
-                        <li><a href="#">Avis</a></li>
-                    </ul>
-                @else
-                    <ul>
-                        <li class ="dark"><a href="/profile">Profil</a></li>
-                        <li class ="dark"><a href="#">Gestion</a></li>
-                        <li class ="dark"><a href="#">Messages</a></li>
-                        <li class ="dark"><a href="#">Prestations</a></li>
-                        <li class ="dark"><a href="#">Planning</a></li>
-                        <li class ="dark"><a href="#">Avis</a></li>
-                    </ul>
-                @endif
-            @else
-                @if($light == true)
-                    <ul>
-                        <li><a href="/profile">Profil</a></li>
-                        <li><a href="#">Voyager</a></li>
-                        <li><a href="#">Prestation</a></li>
-                        <li><a href="#">Louer</a></li>
-                        <li><a href="#">Avis</a></li>
-                    </ul>
-                @else
-                    <ul>
-                        <li class ="dark"><a href="/profile">Profil</a></li>
-                        <li class ="dark"><a href="#">Voyager</a></li>
-                        <li class ="dark"><a href="#">Prestation</a></li>
-                        <li class ="dark"><a href="#">Louer</a></li>
-                        <li class ="dark"><a href="#">Avis</a></li>
-                    </ul>
-                @endif
-            @endif
+            @php
+            $menuItems = $profile ? [
+            ['link' => '/profile', 'text' => 'Profil'],
+            ['link' => '#', 'text' => 'Gestion'],
+            ['link' => '#', 'text' => 'Messages'],
+            ['link' => '#', 'text' => 'Prestations'],
+            ['link' => '#', 'text' => 'Planning'],
+            ['link' => '#', 'text' => 'Avis'],
+            ] : [
+            ['link' => '/profile', 'text' => 'Profil'],
+            ['link' => '#', 'text' => 'Voyager'],
+            ['link' => '#', 'text' => 'Prestation'],
+            ['link' => '#', 'text' => 'Louer'],
+            ['link' => '#', 'text' => 'Avis'],
+            ];
+            @endphp
+            <ul class="{{ $light ? '' : 'dark' }}">
+                @foreach($menuItems as $item)
+                <li class="{{ $light ? '' : 'dark' }}"><a href="{{ $item['link'] }}">{{ $item['text'] }}</a></li>
+                @endforeach
+            </ul>
         </div>
         @if($connected == true)
-            <div class="profile">
-                <img src="{{ asset('/assets/images/default_user.png')}}" alt="profile">
-            </div>
+        <div class="profile">
+            <img src="{{ asset('/assets/images/default_user.png')}}" alt="profile">
+        </div>
         @else
         <div class="cta">
             <button onclick="window.location.href='/login'">Se connecter</button>

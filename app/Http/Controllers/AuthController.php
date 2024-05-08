@@ -51,7 +51,7 @@ class AuthController extends Controller
             ])->onlyInput('email');
         } catch (GuzzleException $e) {
             return redirect('/login', 302, [], true)->withErrors([
-                "error" => "Error when get data"
+                "error" => "Error when get data: " . $e->getMessage()
             ]);
         }
 
@@ -93,7 +93,7 @@ class AuthController extends Controller
             //dd($responseBody);
             if ($response->getStatusCode() !== 200) {
                 return view('auth.login')->withErrors([
-                    "error" => "Error when load register page"
+                    "error" => "Error when load register page "  . $e->getMessage() . " " . env("API_URL")
                 ]);
             }
             $data = $responseBody['data'];
@@ -101,7 +101,7 @@ class AuthController extends Controller
 
         }catch (GuzzleException $e) {
             return view('auth.login')->withErrors([
-                "error" => "Error when load register page"
+                "error" => "Error when load register page "  . $e->getMessage() . " " . env("API_URL")
             ]);
         }
     }

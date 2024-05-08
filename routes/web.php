@@ -43,6 +43,8 @@ Route::get('/main_travel_page', function () {
 });
 
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
-    Route::get('/', 'index');
+    Route::get('/', 'showProfile')->name('profile');
+    route::post('/', 'updateProfile')->name('update_profile');
+    Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
     Route::get('/{any}','index')->where('any', '.*');
 });
