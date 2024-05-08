@@ -33,7 +33,7 @@ class ProfileController extends Controller
         return $client->get(env("API_URL") . 'account?token=' . $token, [
             'headers' => [
                 'authorization' => 'Bearer ' . $token,
-                ]
+            ]
         ]);
     }
     public function showProfile()
@@ -103,7 +103,7 @@ class ProfileController extends Controller
             ]
         ]);
         $password = $request->input('password');
-        if (!$this->verifyPassword($password)){
+        if (!$this->verifyPassword($password)) {
             return redirect('/profile', 302, [], false)->withErrors(["error" => "Error : wrong password"]);
         }
 
@@ -114,7 +114,6 @@ class ProfileController extends Controller
         if ($field == "name") {
             $field1 = "first_name";
             $field2 = "last_name";
-
         }
 
         // Mise à jour selon le champ spécifié
@@ -144,5 +143,30 @@ class ProfileController extends Controller
         } catch (\Exception $e) {
             return redirect('/profile', 302, [], false)->withErrors(["error" => "Error when update profile 2: " . $e->getMessage()]);
         }
+    }
+    public function uploadProfileImage(Request $request)
+    {
+        $request->validate([
+            'profile_image' => 'required|image|max:2048',
+        ]);
+
+        $fileName = time() . '.' . $request->profile_image->extension();
+        $request->profile_image->move(public_path('assets/images/pfp'), $fileName);
+
+        $client = new Client();
+        $token = session('token');
+        $infosAcc = $this->getInfoprofile();
+        $uuid = json_decode($infosAcc->getBody()->getContents(), true)['data'][0]['uuid'];
+        $body = ['imgPath' => $fileName];
+        $response = $client->put(env("API_URL") . 'account?uuid=' . $uuid, [
+            'headers' => ['authorization' => 'Bearer ' . $token],
+            'json' => $body
+        ]);
+        if ($response->getStatusCode() !== 200) {
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Error when update profile: " . $response->getBody()->getContents()
+            ]);
+        }
+        return redirect('/profile', 302, [], false)->with('success', 'Profile picture updated!');
     }
 }

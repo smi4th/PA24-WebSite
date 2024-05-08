@@ -65,7 +65,11 @@
          <div class="first-section">
             <h5>Photo de profil</h5>
             <div class="picture">
-               <img src="{{ asset('/assets/images/' . $imgPath) }}" alt="profile">
+               <img src="{{ asset('/assets/images/pfp/' . $imgPath) }}" alt="profile" id="profileImage">
+               <form action="{{ route('profile.upload') }}" method="POST" enctype="multipart/form-data" style="display:none;" id="fileUploadForm">
+                  @csrf
+                  <input type="file" name="profile_image" id="fileInput">
+               </form>
             </div>
          </div>
          <div class="seperate"></div>
@@ -130,6 +134,7 @@
          }
          document.getElementById('page' + page).style.display = 'block';
       }
+
       $(document).ready(function() {
          $('.inputbox input').click(function() {
             var inputName = $(this).attr('name');
@@ -137,6 +142,14 @@
                window.location.href = '{{ url("/profile/edit-profile") }}/' + inputName;
             }
          });
+      });
+
+      document.getElementById('profileImage').addEventListener('click', function() {
+         document.getElementById('fileInput').click();
+      });
+
+      document.getElementById('fileInput').addEventListener('change', function() {
+         document.getElementById('fileUploadForm').submit();
       });
    </script>
 

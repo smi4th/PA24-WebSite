@@ -46,5 +46,6 @@ Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileCon
     Route::get('/', 'showProfile')->name('profile');
     route::post('/', 'updateProfile')->name('update_profile');
     Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
+    Route::post('/profile/upload', 'uploadProfileImage')->name('profile.upload');
     Route::get('/{any}','index')->where('any', '.*');
 });
