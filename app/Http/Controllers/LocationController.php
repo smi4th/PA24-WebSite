@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LocationRequest;
 use App\Http\Requests\ReservationRequest;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
@@ -118,12 +119,82 @@ class LocationController extends Controller
         //afficher le nombre de place disponible en fonction des cases cochées et de la date
 
         $data = $request->validated();
-        dd($data);
+        $start = $data['date_start'];
+        $end = $data['date_end'];
+
+        $bedRooms = [];
+        $equipments = [];
+
+        try {
+            $client = new Client();
+            $response = $client->getAsync(env('API_URL') . 'bed_room?housing=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ])->wait();
+            $bedRooms = json_decode($response->getBody()->getContents());
+            $bedRooms = $bedRooms->data;
+
+
+            foreach($bedRooms as $bedRoom){
+                $response = $client->getAsync(env('API_URL') . 'bed_room/available?start_time=' . $start . '&end_time=' . $end . '&bedroom=' . $bedRoom->uuid, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ])->wait();
+                $available = json_decode($response->getBody()->getContents());
+                $bedRoom->available = $available;
+
+                $response = $client->getAsync(env('API_URL') . 'reservation_bedroom?bed_room='. $bedRoom->uuid, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ])->wait();
+                $reservations = json_decode($response->getBody()->getContents());
+                $bedRoom->reservations = $reservations->data;
+            }
+
+            $response = $client->getAsync(env('API_URL') . 'equipment?housing=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ])->wait();
+            $equipments = json_decode($response->getBody()->getContents());
+            $equipments = $equipments->data;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            $bedRooms = empty($bedRooms) ? [] : $bedRooms;
+            $equipments = empty($equipments) ? [] : $equipments;
+        }
+
+
+        return view("default", [
+            'file_path' => $this->view_path . "reservation_location",
+            'stack_css' => 'reservation_location',
+            'connected' => $this->isAuth(),
+            'profile' => false,
+            'light' => false,
+            'bedRooms' => $bedRooms,
+            'equipments' => $equipments,
+            'start' => $start,
+            'end' => $end,
+            'housing' => $id
+        ]);
     }
 
-    public function doReservation(Request $request, $id)
-    {
+    public function doReservationLocation(LocationRequest $request, $id){
+
+
+
         $data = $request->validated();
-        dd($data);
+
+
+        //print all arguments
+        error_log("doReservationLocation");
+        error_log($idHousing);
+        error_log(print_r($idBedRooms, true));
+        error_log(print_r($idEquipments, true));
+        error_log(print_r($data, true));
     }
 }

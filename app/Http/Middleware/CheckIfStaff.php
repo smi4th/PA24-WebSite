@@ -12,9 +12,12 @@ class CheckIfStaff
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     *
      */
+    private $client;
     public function handle(Request $request, Closure $next): Response
     {
+        error_log("CheckIfStaff Middleware");
         /*
          * Cette fonction doit être mis à jour pour voir comment bien faire le check du staff
          */
@@ -24,32 +27,31 @@ class CheckIfStaff
                 'code' => 401
             ], 401);
         }
+        $this->client = new Client();
         try{
-            $requestGetAccounts =$this->client->get($_ENV['API_URL'] . 'account?all=true', [
+
+            $getUuid = $this->client->get(env("API_URL") . 'account?token=' . $request->session()->get('token'), [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $id = json_decode($getUuid->getBody()->getContents());
+            $id = $id->data[0]->uuid;
+
+            $isAdmin = $this->client->get($_ENV['API_URL'] . 'admin?account='. $id, [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $request->session()->get('token')
                 ]
             ]);
-            $data = json_decode($requestGetAccounts->getBody()->getContents());
-            $accounts = $data->data;
-            $getAccountType = [];
-
-            $requestGetNameTypeAccount = $this->client->get($_ENV['API_URL'] . 'account_type?all=true', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $request->session()->get('token')
-                ]
-            ]);
-            $data = json_decode($requestGetNameTypeAccount->getBody()->getContents());
-            $data = $data->data;
-
-            foreach ($accounts as $key => $value){
-                foreach ($data as $account_type){
-                    if ($key == $account_type->uuid){
-                        $accounts[$account_type->type] = $value;
-                        unset($accounts[$key]);
-                    }
-                }
+            $data = json_decode($isAdmin->getBody()->getContents());
+            error_log($data->admin);
+            if($data->admin == false){
+                return response()->view('error', [
+                    'message' => 'You must be an admin to access this page!',
+                    'code' => 401
+                ], 401);
             }
+
         }catch (\Exception $e){
             return response()->view('error', [
                 'message' => 'You must login first!',

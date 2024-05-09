@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BackOfficeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckIfAuth;
+use App\Http\Middleware\CheckIfStaff;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PrestationController;
 
 Route::get('/', function () {
     return view('landing');
@@ -23,7 +25,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'checkRegister']);
 
-Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOfficeController::class)->group(function () {
+Route::prefix('/backoffice')->middleware(CheckIfAuth::class,CheckIfStaff::class)->controller(BackOfficeController::class)->group(function () {
 
     Route::get('/', 'index');
     Route::get('/statistics', 'statistics');
@@ -48,7 +50,16 @@ Route::prefix('/travel')->controller(LocationController::class)->middleware(Chec
     Route::get('/', 'index');
     Route::get('/{id}', 'showLocation');
     Route::get('/reservation/{id}', 'showReservation');
-    Route::post('/reservation/{id}', 'doReservation');
+    Route::post('/reservation/{id}', 'doReservationLocation');
+    Route::get('/{any}','index')->where('any', '.*');
+});
+
+/** TODO */
+Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(PrestationController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{type}', 'showPrestation');
+    Route::get('/{type}/{id}', 'showSubPrestation');
+    Route::post('/{type}/{id}/reservation', 'doReservationPrestation');
     Route::get('/{any}','index')->where('any', '.*');
 });
 
