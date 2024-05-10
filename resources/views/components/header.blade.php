@@ -23,7 +23,7 @@ $imgPath = $imgPathValue;
             $menuItems = $profile ? [
             ['link' => '/profile', 'text' => 'Profil'],
             ['link' => '#', 'text' => 'Gestion'],
-            ['link' => '#', 'text' => 'Messages'],
+            ['link' => '/message', 'text' => 'Messages'],
             ['link' => '#', 'text' => 'Prestations'],
             ['link' => '#', 'text' => 'Planning'],
             ['link' => '#', 'text' => 'Avis'],
