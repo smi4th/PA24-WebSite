@@ -22,8 +22,8 @@ class ReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date_start' => 'required|date',
-            'date_end' => 'required|date|after:date_start',
+            'date_start' => 'date',
+            'date_end' => 'date|after:date_start',
         ];
     }
     public function messages()

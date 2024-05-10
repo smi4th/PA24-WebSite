@@ -54,11 +54,10 @@ Route::prefix('/travel')->controller(LocationController::class)->middleware(Chec
     Route::get('/{any}','index')->where('any', '.*');
 });
 
-/** TODO */
 Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(PrestationController::class)->group(function () {
     Route::get('/', 'index');
-    Route::get('/{type}', 'showPrestation');
-    Route::get('/{type}/{id}', 'showSubPrestation');
+    Route::get('/{type}', 'showSubPrestation');
+    Route::get('/{type}/{id}', 'showPrestation');
     Route::post('/{type}/{id}/reservation', 'doReservationPrestation');
     Route::get('/{any}','index')->where('any', '.*');
 });

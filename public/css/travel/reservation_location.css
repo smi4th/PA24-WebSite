@@ -79,13 +79,19 @@ img {
                 margin-top: 2%;
 
                 .price{
-                    font-size: 1.5rem;
-                    font-weight: normal;
-                    color: var(--dark-blue-grey);
-                    font-family: "Abel", sans-serif;
                     background-color: var(--secondary-color);
                     padding: 0.5% 1%;
                     border-radius: 5px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    h3{
+                        font-size: 1.5rem;
+                        font-weight: normal;
+                        color: var(--dark-blue-grey);
+                        font-family: "Abel", sans-serif;
+
+                    }
                 }
                 .title{
                     font-size: 1.5rem;
@@ -196,6 +202,24 @@ form{
         font-family: "Abel", sans-serif;
         border-radius: 10px;
         cursor: pointer;
+    }
+}
+.postscriptum{
+    width: 100%;
+    height: 5%;
+    h3 {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: lighter;
+        color: var(--dark-blue-grey);
+        font-family: "Abel", sans-serif;
+    }
+    p{
+        text-align: center;
+        font-size: 1rem;
+        font-weight: lighter;
+        color: var(--dark-blue-grey);
+        font-family: "Abel", sans-serif;
     }
 }
 

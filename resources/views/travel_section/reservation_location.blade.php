@@ -24,7 +24,9 @@
                             </div>
                             <div class="bedroom_description">
                                 <div class="title">{{$bedRoom->description}}</div>
-                                <div class="price">{{$bedRoom->price}}€/nuit</div>
+                                <div class="price">
+                                    <h3>{{$bedRoom->price}}€/nuit</h3>
+                                </div>
                                 <div class="bedroom_equipment">
                                     <div class="title">
                                         <h3>Equipements</h3>
@@ -77,6 +79,11 @@
                 </ul>
             </div>
         @endif
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <form action="/travel/reservation/{{$housing}}" method="post">
             @csrf
             @method('POST')
@@ -84,6 +91,10 @@
             <input type="hidden" id="equipment_form" name="equipment_form" value="">
             <button type="submit" onclick="addToBasket()">Ajouter au panier</button>
         </form>
+        <div class="postscriptum">
+            <h3>Post-scriptum</h3>
+            <p>Réserver l'ensemble des chambres revient à réserver l'ensemble du bien,<br>vous pouvez toujours réserver les chambres en décalé</p>
+        </div>
 
     </div>
 
@@ -147,15 +158,20 @@
                     checkbox.checked = all_equipments.checked;
 
                     let find = false;
-                    for (let i = 0; i < equipment.length; i++) {
-                        if(equipment[i].id_equipment === checkbox.id && equipment[i].id_bedroom === checkbox.dataset.bedroom){
-                            equipment[i] = {id_equipment:checkbox.id,id_bedroom : checkbox.dataset.bedroom};
-                            find = true;
+                    if(equipment.length === 0){
+                        equipment.push({id_equipment:checkbox.id,id_bedroom : checkbox.dataset.bedroom});
+                    }else{
+                        for (let i = 0; i < equipment.length; i++) {
+                            if(equipment[i].id_equipment === checkbox.id && equipment[i].id_bedroom === checkbox.dataset.bedroom){
+                                equipment[i] = {id_equipment:checkbox.id,id_bedroom : checkbox.dataset.bedroom};
+                                find = true;
+                            }
+                        }
+                        if(!find && checkbox.dataset.bedroom !== undefined) {
+                            equipment.push({id_equipment: checkbox.id, id_bedroom: checkbox.dataset.bedroom});
                         }
                     }
-                    if(!find && checkbox.dataset.bedroom !== undefined) {
-                        equipment.push({id_equipment: checkbox.id, id_bedroom: checkbox.dataset.bedroom});
-                    }
+
                     console.log(equipment,checkbox,find);
                 }
             });
@@ -189,17 +205,16 @@
             document.getElementById('equipment_form').value = JSON.stringify(equipment);
         }
 
+
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEls = document.querySelectorAll('.bedroom_calendar');
 
             calendarEls.forEach(function(calendarEl) {
                 let id = calendarEl.id;
                 console.log(id);
+
                 @foreach($bedRooms as $bedRoom)
-                    @foreach($bedRoom->reservations as $reservation)
-                        console.log('{{$reservation->start_time}}')
-                        console.log('{{$reservation->end_time}}')
-                    @endforeach
+
                     if(id === '{{$bedRoom->uuid}}') {
                         var calendar = new FullCalendar.Calendar(calendarEl, {
                             initialView: 'dayGridMonth',
@@ -235,17 +250,21 @@
                             },
 
                             events: [
-                                @foreach($bedRoom->reservations as $reservation)
-                                    {
-                                        title: 'Réservé',
-                                        start: '{{$reservation->start_time}}',
-                                        end: '{{date('Y-m-d', strtotime($reservation->end_time . ' +1 day')) }}',
-                                        color: 'lightgrey',
-                                        display: 'background',
-                                        fontFamily: 'Arial',
-                                    },
+                                    @if ($bedRoom->reservations !== null)
 
-                                @endforeach
+                                        @foreach($bedRoom->reservations as $reservation)
+
+                                            {
+                                                title: 'Réservé',
+                                                start: '{{$reservation->start_time}}',
+                                                end: '{{date('Y-m-d', strtotime($reservation->end_time . ' +1 day')) }}',
+                                                color: 'lightgrey',
+                                                display: 'background',
+                                                fontFamily: 'Arial',
+                                            },
+
+                                      @endforeach
+                                @endif
 
                             ]
                         });

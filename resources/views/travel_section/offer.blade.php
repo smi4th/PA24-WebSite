@@ -63,9 +63,9 @@
                             @endif
                             <div class="user">{{$users[$i]->username}}</div>
                         </div>
-                        <div class="content">{{$reviews[$i]->review}}</div>
+                        <div class="content">{{$reviews[$i]->content}}</div>
                         <div class="rating">
-                            @for($j = 0; $j < $reviews[$i]->review_note; $j++)
+                            @for($j = 0; $j < $reviews[$i]->note; $j++)
                                 <i class="star"></i>
                             @endfor
                         </div>
@@ -81,7 +81,7 @@
                         <li class="equipment_item">
                             <div class="layout">
                                 <div class="image">
-                                    @if($equipment->imgPath == "null")
+                                    @if(strtolower($equipment->imgPath) == "null")
                                         <img src="{{ asset('/assets/images/equipment_default.jpg') }}" alt="image">
                                     @else
                                         <img src="{{ asset($equipment->imgPath) }}" alt="image">
