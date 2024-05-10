@@ -168,22 +168,6 @@
             });
         }
 
-        function sendFakeMessage() {
-            const fakeMessage = {
-                author_uuid: '1c21000c-3932-42be-a16a-518e110cf8a6', // Remplacez par un UUID valide pour simuler l'auteur
-                recipient_account: '5047b156-5c54-4691-b9e6-8c8b6bbe0ff1', // Remplacez par un UUID valide du destinataire
-                message_content: 'Ceci est un message test',
-                image_path: 'NULL' // Optionnel, ajoutez un chemin si nécessaire
-            };
-
-            // Simuler la réception du message comme si c'était envoyé par le serveur
-            window.Echo.private('messages')
-                .whisper('message.sent', fakeMessage);
-        }
-
-        // Vous pouvez appeler cette fonction pour envoyer un faux message
-        sendFakeMessage();
-
         updateMessageVisibility();
     </script>
 </body>
