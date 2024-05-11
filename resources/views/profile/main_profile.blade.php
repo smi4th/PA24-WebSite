@@ -106,6 +106,12 @@
                @csrf
                <input type="submit" value="Déconnexion">
             </form>
+            <br>
+            <!-- Bouton rouge supprimer mon compte qui appelle la route auth.delete -->
+            <form action="{{ route('auth.delete') }}" method="POST">
+               @csrf
+               <button type="submit" class="btn btn-danger">Supprimer mon compte</button>
+            </form>
          </div>
       </div>
       <div class="page" id="page2">

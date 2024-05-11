@@ -70,11 +70,6 @@
                     block: 'end'
                 });
             }
-            Echo.channel('messages')
-                .listen('.message.sent', (e) => {
-                    console.log('New message received:', e);
-                    addMessageToDOM(e.message);
-                });
 
             document.getElementById('userSelect').addEventListener('change', function() {
                 updateMessageVisibility();

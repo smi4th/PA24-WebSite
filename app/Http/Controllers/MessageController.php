@@ -105,7 +105,7 @@ class MessageController extends Controller
             'message_content' => $body['content'],
             'image_path' => $body['imgPath']
         ];
-        event(new MessageSent($message));
+        //event(new MessageSent($message));
         try {
             $response = $client->post(env("API_URL") . 'message', [
                 'headers' => [

@@ -24,6 +24,8 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'checkRegister']);
 
+Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->name('auth.delete');
+
 Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOfficeController::class)->group(function () {
 
     Route::get('/', 'index');
