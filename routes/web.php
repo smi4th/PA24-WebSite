@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckIfAuth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\InfoController;
 
 Route::get('/', function () {
     return view('landing');
@@ -55,4 +56,10 @@ Route::prefix('/message')->middleware(CheckIfAuth::class)->controller(MessageCon
     Route::get('/', 'index')->name('message');
     route::post('/send-message', 'sendMessage')->name('send_message');
     Route::get('/{any}','index')->where('any', '.*');
+});
+
+Route::prefix('/info')->controller(InfoController::class)->group(function () {
+    Route::get('/confidentialite', 'showConfidentialite')->name('confidentialite');
+    Route::get('/cookies', 'showCookies')->name('cookies');
+    Route::get('/mentions-legales', 'showMentionsLegales')->name('mentions_legales');
 });
