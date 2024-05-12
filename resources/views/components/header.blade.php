@@ -16,7 +16,7 @@ $imgPath = $imgPathValue;
 <header>
     <nav>
         <div class="logo">
-            <img src="{{ asset('/assets/images/SiteLogo.svg') }}" alt="logo" onclick="window.location.href='/'">
+            <img src="{{ asset('assets/icons/logo.png') }}" alt="logo" onclick="window.location.href='/'">
         </div>
         <div class="menu">
             @php

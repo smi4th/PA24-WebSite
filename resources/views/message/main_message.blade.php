@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script src="{{ mix('js/app.js') }}"></script>
-    <link rel="icon" href="{{ asset('logo.png') }}" />
+    <link rel="icon" href="{{ asset('assets/icons/logo.png') }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 @php

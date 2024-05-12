@@ -23,7 +23,7 @@
         <div class="header">
             <nav>
                 <div class="logo">
-                    <img src="{{ asset('/assets/images/SiteLogo.svg') }}" alt="logo">
+                    <img src="{{ asset('assets/icons/logo.png') }}" alt="logo">
                 </div>
                 <div class="menu">
                     <ul>
