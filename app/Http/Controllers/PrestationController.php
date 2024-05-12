@@ -82,6 +82,15 @@ class PrestationController extends Controller
             ])->wait();
             $service = json_decode($response->getBody()->getContents());
             $service = $service->data;
+            $account = $service[0]->account;
+
+            $response = $client->getAsync(env('API_URL') . 'disponibility?account='.$account, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ])->wait();
+            $disponibility = json_decode($response->getBody()->getContents());
+            $disponibility = $disponibility->data;
 
         } catch (\Exception $e) {
             error_log($e->getMessage());
@@ -95,7 +104,50 @@ class PrestationController extends Controller
             'connected' => $this->isAuth(),
             'profile' => false,
             'light' => false,
-            'service' => $service
+            'service' => $service,
+            'type' => $type,
+            'id' => $id,
+            'disponibility' => $disponibility
         ]);
+    }
+    function doReservationPrestation(Request $request, $type, $id)
+    {
+        $client = new Client();
+        try {
+            $response = $client->get(env('API_URL') . 'account?token=' . $request->session()->get('token'), [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $account = json_decode($response->getBody()->getContents());
+            $accountUuid = $account->data[0]->uuid;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('prestations/'.$type."/". $id, 302, [], false)->withErrors(['error' => 'An error occurred']);
+        }
+        $data = $request->validate([
+            'date_start' => 'required|date'
+        ]);
+
+        $date_start = $data['date_start'];
+
+        try{
+            $client = new Client();
+            $response = $client->post(env('API_URL') . 'basket/services', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => [
+                    'account' => $accountUuid,
+                    'service' => $id,
+                    'date_start' => $date_start
+                ]
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('prestations/'.$type.'/'.$id, 302, [], false)->withErrors(['error' => 'An error occurred']);
+        }
+
+        return redirect('prestations/'.$type.'/'.$id, 302, [], false)->with('success', 'Reservation done');
     }
 }

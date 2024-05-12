@@ -30,7 +30,6 @@ class AuthController extends Controller
 
         try{
             $client = new Client();
-
             $response = $client->post(env("API_URL") . 'login', [
                 'headers' => $headers,
                 'json' => $body
@@ -50,7 +49,8 @@ class AuthController extends Controller
                 "password" => $responseBody['message']
             ])->onlyInput('email');
         } catch (GuzzleException $e) {
-            return redirect('/login', 302, [], true)->withErrors([
+            error_log($e->getMessage());
+            return redirect('/login', 302, [], false)->withErrors([
                 "error" => "Error when get data"
             ]);
         }

@@ -12,19 +12,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->validateCsrfTokens(
+            except: [
+                'basketPayment/*',
+            ]
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //dd($exceptions);
 
         $exceptions->render(function (Throwable $e) {
-            //if app is in debug mode, show the exception
+            //if app is in debug mode,don't show the exception
             if (config('app.debug')) {
                 return null;
             }
             return response()->view('error', [
                 'message' => 'Error occurred!',
                 'code' => $e->getCode()
-            ], 500);
+            ], $e->getCode());
         });
     })->create();
+

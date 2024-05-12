@@ -8,6 +8,7 @@ use App\Http\Middleware\CheckIfStaff;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PrestationController;
+use App\Http\Controllers\StripePaymentController;
 
 Route::get('/', function () {
     return view('landing');
@@ -59,6 +60,13 @@ Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(Presta
     Route::get('/{type}', 'showSubPrestation');
     Route::get('/{type}/{id}', 'showPrestation');
     Route::post('/{type}/{id}/reservation', 'doReservationPrestation');
+    Route::get('/{any}','index')->where('any', '.*');
+});
+
+Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(StripePaymentController::class)->group(function () {
+    Route::get('/', 'checkout');
+    Route::post('/success', 'success')->name('success');
+    Route::get('/cancel', 'cancel')->name('cancel');
     Route::get('/{any}','index')->where('any', '.*');
 });
 

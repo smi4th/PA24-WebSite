@@ -232,7 +232,6 @@ class LocationController extends Controller
         }
 
         try{
-
             $response = $client->get(env('API_URL') . 'basket?account=' . $accountUuid, [
                 'headers' => [
                     "Authorization" => "Bearer " . $request->session()->get('token')
@@ -261,7 +260,17 @@ class LocationController extends Controller
 
             }
             else{
-                $basketUuid = $basket->baskets[0]->uuid;
+                $basketUuid = $basket->baskets;
+                $find = false;
+                foreach ($basketUuid as $item) {
+                    if ($item->paid == 0){
+                        $basketUuid = $item->uuid;
+                        $find = true;
+                    }
+                }
+                if (!$find){
+                   return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'Your basket is empty']);
+                }
             }
         }catch (\Exception $e){
             error_log($e->getMessage());
@@ -303,6 +312,7 @@ class LocationController extends Controller
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'The bedrooms are not all available']);
         }
+
         try {
             foreach ($dates as $bedRoom) {
 
@@ -332,7 +342,7 @@ class LocationController extends Controller
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'An error occurred when add bedroom']);
         }
-        try {
+        //try {
 
             for ($i = 0; $i < count($equipments); $i++) {
                 for ($j = $i + 1; $j < count($equipments); $j++) {
@@ -357,13 +367,13 @@ class LocationController extends Controller
                     ]
                 ]);
             }
-        }catch (\Exception $e){
+        /*}catch (\Exception $e){
             error_log($e->getMessage());
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'An error occurred when add equipment']);
-        }
+        }*/
 
-        try {
+        //try {
 
              if($totalBedRoom === count($dates)){
                 $response = $client->post(env('API_URL') . 'basket/housing', [
@@ -382,12 +392,12 @@ class LocationController extends Controller
 
             return redirect('/travel/reservation/'. $id, 302, [], false)->with('success', 'Reservation success! price = ' . $totalPrice . '€');
 
-        }catch (\Exception $e){
+        /*}catch (\Exception $e){
 
             error_log($e->getMessage());
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['errors' => 'An error occurred ']);
-        }
+        }*/
 
     }
     private function getTotalPriceBasketLocation($request, $id,$accountUuid)
@@ -404,7 +414,18 @@ class LocationController extends Controller
                 ]
             ]);
             $basket = json_decode($response->getBody()->getContents());
-            $basket = $basket->baskets[0];
+            $basket = $basket->baskets;
+
+            $find = false;
+            foreach ($basket as $item) {
+                if ($item->paid == 0){
+                    $basket = $item;
+                    $find = true;
+                }
+            }
+            if (!$find){
+                return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'Your basket is empty']);
+            }
 
         } catch (\Exception $e) {
             error_log($e->getMessage());
@@ -419,7 +440,10 @@ class LocationController extends Controller
         }
 
         if(count($basket->HOUSING) !== 0){
-            $totalPrice += $basket->HOUSING[0]->price * ((int)$basket->HOUSING[0]->endTime - (int)$basket->HOUSING[0]->startTime);
+
+            $last = count($basket->HOUSING) - 1;
+            $totalPrice += $basket->HOUSING[$last]->price * ((int)$basket->HOUSING[$last]->endTime - (int)$basket->HOUSING[$last]->startTime);
+
         }else{
             foreach ($basket->BEDROOMS as $bedroom) {
                 $totalPrice += $bedroom->price * ($bedroom->end_time - $bedroom->start_time);
