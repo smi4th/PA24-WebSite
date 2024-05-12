@@ -20,16 +20,23 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //dd($exceptions);
+        //ignore message bag exception from form request
+        $exceptions->report(function (Throwable $e) {
+            if ($e instanceof ValidationException) {
+                return false;
+            }
+            return true;
+        });
 
         $exceptions->render(function (Throwable $e) {
             //if app is in debug mode,don't show the exception
-            if (config('app.debug')) {
+            /*if (config('app.debug')) {
                 return null;
-            }
+            }*/
             return response()->view('error', [
                 'message' => 'Error occurred!',
                 'code' => $e->getCode()
-            ], $e->getCode());
+            ], 500);
         });
     })->create();
 

@@ -56,7 +56,7 @@ class AuthController extends Controller
         } catch (GuzzleException $e) {
             error_log($e->getMessage());
             return redirect('/login', 302, [], false)->withErrors([
-                "error" => "Error when get data"
+                "error" => "Error when login please try again!"
             ]);
         }
 
