@@ -65,7 +65,8 @@ Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(Presta
 
 Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(StripePaymentController::class)->group(function () {
     Route::get('/', 'checkout');
-    Route::post('/success', 'success')->name('success');
+    Route::post('/webhook', 'webhook');
+    Route::get('/success', 'success')->name('success');
     Route::get('/cancel', 'cancel')->name('cancel');
     Route::get('/{any}','index')->where('any', '.*');
 });

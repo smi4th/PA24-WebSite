@@ -10,7 +10,7 @@ class StripePaymentController extends Controller
 {
     public function index()
     {
-        return view('stripe');
+        return view('profile.main_profile');
     }
 
     private function getBasket(Request $request)
@@ -137,11 +137,44 @@ class StripePaymentController extends Controller
             ],
             'billing_address_collection'=> 'required',
             'mode' => 'payment',
-            'success_url' => route('success'),
+            'success_url' => "http://localhost:8000/basketPayment/success",
             'cancel_url' => route('cancel'),
         ]);
 
         return redirect()->away($session->url);
+    }
+    public function webhook(Request $request)
+    {
+        error_log('webhook');
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET_KEY'));
+        $endpoint_secret = 'whsec_c8aaaf0e33f54bdf01922fb260680523cfb4e0c0264a1d57ea910e5864498fa3';
+        $payload = @file_get_contents('php://input');
+        $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+        $event = null;
+
+        try {
+            $event = \Stripe\Webhook::constructEvent(
+                $payload, $sig_header, $endpoint_secret
+            );
+        } catch(\UnexpectedValueException $e) {
+            // Invalid payload
+            http_response_code(400);
+            exit();
+        } catch(\Stripe\Exception\SignatureVerificationException $e) {
+            // Invalid signature
+            http_response_code(400);
+            exit();
+        }
+
+        switch ($event->type) {
+            case 'payment_intent.succeeded':
+                $paymentIntent = $event->data->object;
+            default:
+                // Unexpected event type
+                http_response_code(400);
+                exit();
+        }
+        http_response_code(200);
     }
 
     public function cancel()
@@ -151,11 +184,7 @@ class StripePaymentController extends Controller
 
     public function success(Request $request)
     {
-        if ($request->type !== "payment_intent.succeeded"){
-            return redirect('/profile',302,[],false)->withErrors(['error', 'Payment failed']);
-        }else{
-            return redirect('/profile',302,[],false)->with('success', 'Payment success');
-        }
+        return redirect('/profile',302,[],false)->with('success', 'Payment success');
 
 
         $client = new Client();

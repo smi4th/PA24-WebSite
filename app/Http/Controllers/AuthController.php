@@ -30,12 +30,16 @@ class AuthController extends Controller
 
         try{
             $client = new Client();
-            $response = $client->post(env("API_URL") . 'login', [
+            $response = $client->post(env("API_URL") . 'login', [ //http://localhost:8000/api/login
                 'headers' => $headers,
                 'json' => $body
             ]);
 
             $responseBody = json_decode($response->getBody()->getContents(), true);
+            /*
+             * $responseBody = [
+             *     "token" => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM
+             */
 
             if ($response->getStatusCode() === 201) {
                 $request->session()->regenerate();
@@ -48,6 +52,7 @@ class AuthController extends Controller
                 "email" => $responseBody['message'],
                 "password" => $responseBody['message']
             ])->onlyInput('email');
+
         } catch (GuzzleException $e) {
             error_log($e->getMessage());
             return redirect('/login', 302, [], false)->withErrors([
