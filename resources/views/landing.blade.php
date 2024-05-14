@@ -195,32 +195,36 @@
 
         document.getElementById('send-message').addEventListener('click', function() {
             var message = document.getElementById('chat-input').value;
-            var bodyContent = JSON.stringify({ message: message })
             var chatContainer = document.querySelector('.chat-container');
-            var newMessage = `<div class="chat-message"><b>vous:</b> ${message}</div>`;
+            var newMessage = `<div class="chat-message"><b>Vous:</b> ${message}</div>`;
             chatContainer.innerHTML += newMessage;
             document.getElementById('chat-input').value = '';
+
             fetch('/botman', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: bodyContent
+                    body: JSON.stringify({
+                        message: message
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    var messageContent = data.messages;
-
-
-                    var newMessage = `<div class="chat-message"><b>Bot:</b> ${messageContent}</div>`;
-                    chatContainer.innerHTML += newMessage;
-                    console.log(data);
+                    console.log('Success');
+                    let message = data.messages[0].text;
+                    if (data.messages[0].text) {
+                        var botMessage = `<div class="chat-message"><b>Bot:</b> ${message}</div>`;
+                        chatContainer.innerHTML += botMessage;
+                    } else {
+                        var botMessage = `<div class="chat-message"><b>Bot:</b> Pas de réponse</div>`;
+                        chatContainer.innerHTML += botMessage;
+                    }
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
-                
         });
     </script>
     <x-footer />
@@ -228,3 +232,5 @@
 </body>
 
 </html>
+
+
