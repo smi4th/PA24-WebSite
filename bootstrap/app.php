@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             /*if (config('app.debug')) {
                 return null;
             }*/
+            error_log($e->getMessage());
             return response()->view('error', [
                 'message' => 'Error occurred!',
                 'code' => $e->getCode()

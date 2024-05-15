@@ -184,34 +184,25 @@ class StripePaymentController extends Controller
 
     public function success(Request $request)
     {
-        return redirect('/profile',302,[],false)->with('success', 'Payment success');
-
-
-        $client = new Client();
+        //call an other controller
+        //return app()->call('App\Http\Controllers\StripePaymentController@success', ['request' => $request]);
+        $basket = $this->getBasket($request);
         try {
+            $client = new Client();
             $response = $client->get(env('API_URL') . 'account?token='.$request->session()->get('token'), [
                 'headers' => [
                     "Authorization" => "Bearer " . $request->session()->get('token')
                 ]
             ]);
             $account = json_decode($response->getBody()->getContents());
-            $accountUuid = $account->data[0]->uuid;
-
-            $basket = $this->getBasket($request);
-            $basketUuid = $basket->uuid;
-
-            $response = $client->put(env('API_URL') . 'basket?uuid='.$basketUuid, [
-                'headers' => [
-                    "Authorization" => "Bearer " . $request->session()->get('token')
-                ],
-                'json' => [
-                    'paid' => 1
-                ]
-            ]);
         }catch (\Exception $e){
             error_log($e->getMessage());
-            return redirect('/profile',302,[],false)->withErrors(['error' => 'An error occured while updating your basket']);
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'An error occured while preparing receipt']);
         }
+
+        $pdf = (new PdfGeneratorController())->generateReceipt($basket,$account);
+
         return redirect('/profile',302,[],false)->with('success', 'Payment success');
+
     }
 }
