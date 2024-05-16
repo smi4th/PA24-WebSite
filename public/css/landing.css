@@ -478,5 +478,24 @@ section:last-child{
     }
 }
 
+.chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.chatbot-interface {
+    position: fixed;
+    bottom: 60px;  /* Adjust based on button size */
+    right: 20px;
+    width: 300px;
+    z-index: 1050;
+}
+
+.chat-container {
+    height: 200px;
+    overflow-y: auto;
+}
 /**************************************************************************/
 
