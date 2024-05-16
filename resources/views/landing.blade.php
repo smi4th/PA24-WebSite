@@ -33,8 +33,8 @@
                 </div>
                 <div class="menu">
                     <ul>
-                        <li><a href="/main_travel_page">Voyager</a></li>
-                        <li><a href="#">Prestation</a></li>
+                        <li><a href="/travel">Voyager</a></li>
+                        <li><a href="/prestations">Prestation</a></li>
                         <li><a href="#">Louer</a></li>
                         <li><a href="#">Avis</a></li>
                     </ul>

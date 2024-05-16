@@ -4,10 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BackOfficeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckIfAuth;
+use App\Http\Middleware\CheckIfStaff;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\PlanningController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PrestationController;
+use App\Http\Controllers\StripePaymentController;
 
 Route::get('/', function () {
     return view('landing');
@@ -28,13 +32,20 @@ Route::post('/register', [AuthController::class, 'checkRegister']);
 
 Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->name('auth.delete');
 
-Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOfficeController::class)->group(function () {
+Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->name('auth.delete');
+
+Route::prefix('/backoffice')->middleware(CheckIfAuth::class,CheckIfStaff::class)->controller(BackOfficeController::class)->group(function () {
 
     Route::get('/', 'index');
     Route::get('/statistics', 'statistics');
     Route::get('/suggests', 'suggests');
-    Route::get('/travelers', 'travelers');
-    Route::get('/prestations', 'prestations');
+
+    Route::get('/users', 'users');
+    Route::get('/staff', 'staff');
+
+    Route::get('/users/{id}/edit/{information}', 'updateUser');
+    Route::get('/users/{id}/delete', 'deleteUser');
+
     Route::get('/prestations-companies', 'prestationsCompanies');
     Route::get('/providers', 'providers');
     Route::get('/supports', 'supports');
@@ -44,8 +55,28 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class)->controller(BackOff
     Route::get('/{any}','index')->where('any', '.*');
 });
 
-Route::get('/main_travel_page', function () {
-    return view('main_travel_page');
+Route::prefix('/travel')->controller(LocationController::class)->middleware(CheckIfAuth::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{id}', 'showLocation');
+    Route::get('/reservation/{id}', 'showReservation');
+    Route::post('/reservation/{id}', 'doReservationLocation');
+    Route::get('/{any}','index')->where('any', '.*');
+});
+
+Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(PrestationController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{type}', 'showSubPrestation');
+    Route::get('/{type}/{id}', 'showPrestation');
+    Route::post('/{type}/{id}/reservation', 'doReservationPrestation');
+    Route::get('/{any}','index')->where('any', '.*');
+});
+
+Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(StripePaymentController::class)->group(function () {
+    Route::get('/', 'checkout');
+    Route::post('/webhook', 'webhook');
+    Route::get('/success', 'success')->name('success');
+    Route::get('/cancel', 'cancel')->name('cancel');
+    Route::get('/{any}','index')->where('any', '.*');
 });
 
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {

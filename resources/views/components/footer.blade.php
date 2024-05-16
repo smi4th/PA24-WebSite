@@ -12,6 +12,7 @@
                 <li><a href="{{ route('cookies') }}">Politique des cookies</a></li>
                 <li><a href="{{ route('confidentialite') }}">Politique de confidentialité</a></li>
                 <li><a href="#">Plan du site</a></li>
+                <li><a href="/backoffice">Backoffice</a></li>
             </ul>
             <ul>
                 <li class="title_list">Informations pratiques</li>

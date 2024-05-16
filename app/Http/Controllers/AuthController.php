@@ -30,13 +30,16 @@ class AuthController extends Controller
 
         try{
             $client = new Client();
-
-            $response = $client->post(env("API_URL") . 'login', [
+            $response = $client->post(env("API_URL") . 'login', [ //http://localhost:8000/api/login
                 'headers' => $headers,
                 'json' => $body
             ]);
 
             $responseBody = json_decode($response->getBody()->getContents(), true);
+            /*
+             * $responseBody = [
+             *     "token" => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM
+             */
 
             if ($response->getStatusCode() === 201) {
                 $request->session()->regenerate();
@@ -49,9 +52,11 @@ class AuthController extends Controller
                 "email" => $responseBody['message'],
                 "password" => $responseBody['message']
             ])->onlyInput('email');
+
         } catch (GuzzleException $e) {
-            return redirect('/login', 302, [], true)->withErrors([
-                "error" => "Error when get data: " . $e->getMessage()
+            error_log($e->getMessage());
+            return redirect('/login', 302, [], false)->withErrors([
+                "error" => "Error when login please try again!"
             ]);
         }
 
@@ -61,22 +66,22 @@ class AuthController extends Controller
         if ($request->session()->has('token')) {
             try{
                 $client = new Client();
-                $response = $client->delete( env("API_URL") . '/login', [
+                $request->session()->flush();
+                $response = $client->delete( env("API_URL") . 'login', [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $request->session()->get('token')
                     ]
                 ]);
                 if ($response->getStatusCode() === 200) {
-                    $request->session()->flush();
                     //repasser le secure à true
                     return redirect('/login', 302, [], false)->with('success', 'Logout success!');
                 }
-                return redirect('/', 302, [], true)->withErrors([
+                return redirect('/', 302, [], false)->withErrors([
                     "error" => "Error when logout"
                 ]);
 
             }catch (GuzzleException $e) {
-                return redirect('/', 302, [], true)->withErrors([
+                return redirect('/', 302, [], false)->withErrors([
                     "error" => "Error when logout"
                 ]);
             }

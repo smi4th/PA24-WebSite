@@ -12,7 +12,7 @@ class Header extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public $connected = false, public $light, public $profile)
+    public function __construct(public $connected = false, public $light = false, public $profile = false)
     {
         /**
          * $connected : savoir si on affiche le header connecté ou non avec photo de profil

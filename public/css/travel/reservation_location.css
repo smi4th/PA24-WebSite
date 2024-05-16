@@ -1,0 +1,226 @@
+@import "../var.css";
+
+.container_all_bed{
+    width: 100%;
+    height: 100%;
+    padding: 2% 5%;
+    overflow: auto;
+}
+.container_bed {
+    width: 100%;
+    height: 100%;
+    padding: 2% 5%;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 3%;
+}
+img {
+    width:300px;
+    height:300px;
+}
+.bedroom{
+    width: 45%;
+    overflow: auto;
+    padding: 1%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+
+    .title{
+        width: 100%;
+        height: 5%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        h3{
+            font-size: 1.5rem;
+            font-weight: lighter;
+            color: var(--dark-blue-grey);
+            font-family: "Manrope", sans-serif;
+        }
+    }
+    .layout{
+        width: 100%;
+        height: 100%;
+        .bedroom_content{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            .bedroom_image{
+                width: 100%;
+                height: 35%;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 10px;
+                }
+            }
+            .bedroom_description{
+                width: 100%;
+                height: 65%;
+                gap: 3%;
+                display: flex;
+                justify-content: space-between;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 2%;
+
+                .price{
+                    background-color: var(--secondary-color);
+                    padding: 0.5% 1%;
+                    border-radius: 5px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    h3{
+                        font-size: 1.5rem;
+                        font-weight: normal;
+                        color: var(--dark-blue-grey);
+                        font-family: "Abel", sans-serif;
+
+                    }
+                }
+                .title{
+                    font-size: 1.5rem;
+                    font-weight: lighter;
+                    color: var(--dark-blue-grey);
+                    font-family: "Manrope", sans-serif;
+                }
+                .bedroom_equipment{
+                    width: 100%;
+                    height: 100%;
+                    .title{
+                        width: 100%;
+                        height: 15%;
+                        h3{
+                            font-size: 1.5rem;
+                            font-weight: lighter;
+                            color: var(--dark-blue-grey);
+                            font-family: "Manrope", sans-serif;
+                        }
+                    }
+                    .layout_equipment{
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        overflow: auto;
+                        flex-wrap: wrap;
+                        gap: 2%;
+                        .equipment {
+                            width: 20%;
+                            height: 30%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            border-radius: 5px;
+                            background-color: var(--secondary-color);
+                            padding: 1%;
+
+                            .name{
+                                width: 100%;
+                                h3{
+                                    text-align: center;
+                                    font-size: 1rem;
+                                    font-weight: lighter;
+                                    color: var(--dark-blue-grey);
+                                    font-family: "Manrope", sans-serif;
+                                }
+                            }
+                            .price{
+                                width: 100%;
+                                h3{
+                                    text-align: center;
+                                    font-size: 1rem;
+                                    font-weight: lighter;
+                                    color: var(--dark-blue-grey);
+                                    font-family: "Abel", sans-serif;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .disponibility{
+        width: 100%;
+        height: 100%;
+    }
+}
+.all{
+    width: 60%;
+    height: 20%;
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background : linear-gradient(180deg, var(--secondary-color) 10%, white 50%);
+    border-radius: 10px;
+
+    label{
+        font-size: 1.5rem;
+        font-weight: lighter;
+        color: var(--opposite-color-secondary);
+        font-family: "Manrope", sans-serif;
+    }
+    input[type="checkbox"]{
+        width: 20px;
+        height: 20px;
+    }
+}
+
+form{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    button{
+        border: none;
+        width: 20%;
+        height: 50px;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 1.5rem;
+        font-weight: lighter;
+        font-family: "Abel", sans-serif;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+}
+.postscriptum{
+    width: 100%;
+    height: 5%;
+    h3 {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: lighter;
+        color: var(--dark-blue-grey);
+        font-family: "Abel", sans-serif;
+    }
+    p{
+        text-align: center;
+        font-size: 1rem;
+        font-weight: lighter;
+        color: var(--dark-blue-grey);
+        font-family: "Abel", sans-serif;
+    }
+}
+
+

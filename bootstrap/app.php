@@ -13,19 +13,32 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->validateCsrfTokens(
+            except: [
+                'basketPayment/*',
+            ]
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //dd($exceptions);
+        //ignore message bag exception from form request
+        $exceptions->report(function (Throwable $e) {
+            if ($e instanceof ValidationException) {
+                return false;
+            }
+            return true;
+        });
 
         $exceptions->render(function (Throwable $e) {
-            //if app is in debug mode, show the exception
-            if (config('app.debug')) {
+            //if app is in debug mode,don't show the exception
+            /*if (config('app.debug')) {
                 return null;
-            }
+            }*/
+            error_log($e->getMessage());
             return response()->view('error', [
                 'message' => 'Error occurred!',
                 'code' => $e->getCode()
             ], 500);
         });
     })->create();
+

@@ -4,6 +4,7 @@ footer{
     height: 50vh;
     position: relative;
     bottom: 0;
+    background-color: white;
     overflow: visible;
     background-image: url("/assets/images/wave_footer.svg");
     background-size: cover;
