@@ -16,7 +16,7 @@ $imgPath = $imgPathValue;
 <header>
     <nav>
         <div class="logo">
-            <img src="{{ asset('assets/icons/logo.png') }}" alt="logo" onclick="window.location.href='/'">
+            <img src="{{ asset('assets/images/logo/white-line-orange-bg-blue.png') }}" alt="logo" onclick="window.location.href='/'">
         </div>
         <div class="menu">
             @php
@@ -25,7 +25,7 @@ $imgPath = $imgPathValue;
             ['link' => '#', 'text' => 'Gestion'],
             ['link' => '/message', 'text' => 'Messages'],
             ['link' => '#', 'text' => 'Prestations'],
-            ['link' => '#', 'text' => 'Planning'],
+            ['link' => '/planning', 'text' => 'Planning'],
             ['link' => '#', 'text' => 'Avis'],
             ] : [
             ['link' => '/profile', 'text' => 'Profil'],

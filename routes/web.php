@@ -7,6 +7,7 @@ use App\Http\Middleware\CheckIfAuth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\InfoController;
+use App\Http\Controllers\PlanningController;
 
 Route::get('/', function () {
     return view('landing');
@@ -51,6 +52,11 @@ Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileCon
     route::post('/', 'updateProfile')->name('update_profile');
     Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
     Route::post('/profile/upload', 'uploadProfileImage')->name('profile.upload');
+    Route::get('/{any}','index')->where('any', '.*');
+});
+
+Route::prefix('/planning')->middleware(CheckIfAuth::class)->controller(PlanningController::class)->group(function () {
+    Route::get('/', 'showPlanning')->name('planning');
     Route::get('/{any}','index')->where('any', '.*');
 });
 
