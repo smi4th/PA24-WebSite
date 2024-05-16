@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\Drivers\DriverManager;
-use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
+use BotMan\BotMan\Messages\Incoming\Answer;
 
 class BotManController extends Controller
 {
@@ -15,18 +14,15 @@ class BotManController extends Controller
         if (app()->bound('debugbar')) {
             app('debugbar')->disable();
         }
+        //DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
 
-        $config = [
-            
-        ];
-        DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
-        $botman = BotManFactory::create($config);
+        $config = [];
+        $botman = app('botman');
 
-
-        $botman->hears('{message}', function ($botman, $message) {
-            $message = request()->input('message');
-            $responseMessage = 'Bonjour, ' . $message;
-            $botman->reply($responseMessage);
+        $botman->hears('{message}', function ($botman, $message) { 
+            //renvoyer un json avec 'bonjour, "message"'
+            $botman->reply('Bonjour, '.$message);
+            return response()->json(['message' => $message]);
         });
 
         $botman->listen();
