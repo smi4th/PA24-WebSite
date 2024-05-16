@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LocationRequest;
+use App\Http\Requests\PostLocationRequest;
 use App\Http\Requests\ReservationRequest;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
@@ -498,5 +499,34 @@ class LocationController extends Controller
             return redirect('/travel/reservation/'. $housing, 302, [], false)->withErrors(['error' => 'An error occurred when delete basket']);
         }
         return true;
+    }
+
+    public function showCreateLocation(Request $request)
+    {
+        $client = new Client();
+        $response = $client->get(env('API_URL') . 'house_type?all=true', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $request->session()->get('token')
+            ]
+        ]);
+        $typehouse = json_decode($response->getBody()->getContents());
+        $typehouse = $typehouse->data;
+
+
+        return view("default", [
+            'file_path' => $this->view_path . "create_location",
+            'stack_css' => 'create_location',
+            'connected' => $this->isAuth(),
+            'profile' => false,
+            'light' => false,
+            'house_types' => $typehouse
+        ]);
+    }
+    public function doCreateLocation(PostLocationRequest $request)
+    {
+        $data = $request->validated();
+        $client = new Client();
+        dd($data);
+
     }
 }

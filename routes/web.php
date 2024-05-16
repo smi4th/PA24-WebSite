@@ -49,6 +49,8 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class,CheckIfStaff::class)
 
 Route::prefix('/travel')->controller(LocationController::class)->middleware(CheckIfAuth::class)->group(function () {
     Route::get('/', 'index');
+    Route::get('/createLocation', 'showCreateLocation');
+    Route::post('/createLocation', 'doCreateLocation');
     Route::get('/{id}', 'showLocation');
     Route::get('/reservation/{id}', 'showReservation');
     Route::post('/reservation/{id}', 'doReservationLocation');

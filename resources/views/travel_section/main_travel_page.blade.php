@@ -7,10 +7,10 @@
         @foreach($locations as $location)
             <div class="card_layout">
                 <div class="card">
-                    <div class="image">@if($location->imgPath == "NULL")<img src="{{ asset('/assets/images/default_user.png') }}" alt="image">@else<img src="{{ asset($location->imgPath) ?? asset('/assets/images/default_user.png') }}" alt="image">@endif
+                    <div class="image">@if($location->imgPath == "NULL")<img src="{{ asset('/assets/images/maison_default.png') }}" alt="image">@else<img src="{{ asset($location->imgPath) ?? asset('/assets/images/default_user.png') }}" alt="image">@endif
                     </div>
                     <div class="card_content">
-                        <h3>{{ $location->description}}</h3>
+                        <h3>{{ $location->title}}</h3>
                         <p>{{ $location->price }}</p>
                         <a href="/travel/{{$location->uuid}}">Voir plus</a>
                     </div>

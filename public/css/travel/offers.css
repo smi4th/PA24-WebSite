@@ -55,13 +55,24 @@
             align-items: center;
             margin-top: 2%;
 
-            .title{
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: var(--dark-blue-grey);
-                font-family: "Manrope", sans-serif;
+            .group_name{
+                display: flex;
+                flex-direction: column;
+                .title{
+                    font-size: 1.5rem;
+                    font-weight: lighter;
+                    color: var(--dark-blue-grey);
+                    font-family: "Manrope", sans-serif;
 
+                }
+                .description{
+                    font-size: 1rem;
+                    font-weight: normal;
+                    color: var(--dark-blue-grey);
+                    font-family: "Inter", sans-serif;
+                }
             }
+
             .price{
                 font-size: 1.5rem;
                 font-weight: bold;

@@ -1,0 +1,162 @@
+@import "../default.css";
+
+
+.container_form {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+    padding: 2% 5% 5% 5%;
+
+    .info{
+        width: 100%;
+        height: 20%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        h1{
+            font-family: "Maitree", sans-serif;
+            font-size: 3em;
+            color: var(--dark-blue-grey);
+            font-weight: 400;
+            text-align: center;
+        }
+        p{
+            font-family: "Inter", sans-serif;
+            font-size: 1em;
+            color: var(--dark-blue-grey);
+            font-weight: 400;
+            text-align: center;
+        }
+    }
+
+    .form_layout{
+
+        margin: 5% 0;
+        background-color: white;
+
+        form{
+            width: 100%;
+            height: 100%;
+
+            .housing{
+                padding: 1%;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-evenly;
+                height: 100%;
+                gap: 10%;
+                margin-bottom: 5%;
+                border-bottom: 1px solid var(--light-grey);
+                div{
+                    display: flex;
+                    flex-wrap: wrap;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+
+                .addresse{
+                    width:100%;
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap: 5%;
+                }
+            }
+            h2 {
+                font-family: "Maitree", sans-serif;
+                font-size: 2em;
+                color: var(--dark-blue-grey);
+                font-weight: 400;
+                text-align: center;
+                margin: 5% 0;
+            }
+            .bedrooms{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-evenly;
+                gap: 5%;
+                margin-bottom: 5%;
+
+
+            }
+            .CTA{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5%;
+
+                button {
+                    border: none;
+                    width: 30%;
+                    height: 10%;
+                    background-color: var(--primary-color);
+                    font-family: "Abel", sans-serif;
+                    font-size: 1em;
+                    margin: 1%;
+                    padding: 1%;
+                    cursor: pointer;
+                    color: white;
+                    border-radius: 10px;
+                }
+            }
+
+        }
+        button{
+            border: none;
+            width: 30%;
+            height: 10%;
+            background-color: var(--opposite-color);
+            font-family: "Abel", sans-serif;
+            font-size: 1em;
+            margin: 1%;
+            padding: 1%;
+            cursor: pointer;
+            color: white;
+            border-radius: 10px;
+        }
+    }
+}
+
+.form-group{
+    width: 45%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    label{
+        font-size: 1.2rem;
+        font-family: Poppins, sans-serif;
+        margin-bottom: 1%;
+    }
+    input,input[type="number"],select{
+        width: 100%;
+        height: 30%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--light-grey);
+        font-size: 1.5em;
+        color: var(--dark-blue-grey);
+        font-family: "Poppins", sans-serif;
+        font-weight: 400;
+        background-color: transparent;
+        box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.1);
+        outline: none;
+    }
+    textarea{
+        width: 100%;
+        height: 30%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--light-grey);
+        font-size: 1.5em;
+        color: var(--dark-blue-grey);
+        font-family: "Poppins", sans-serif;
+        font-weight: 400;
+        background-color: transparent;
+        box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.1);
+        outline: none;
+    }
+
+}

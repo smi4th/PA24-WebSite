@@ -16,7 +16,10 @@
                 </div>
             @endif
             <div class="content">
-                <div class="title">{{$location->description}}</div>
+                <div class="group_name">
+                    <div class="title">{{$location->title}}</div>
+                    <div class="description">{{$location->description}}</div>
+                </div>
                 <div class="price">{{$location->price}}€/nuit</div>
                 <div class="addresse">{{$location->street_nb}} {{$location->street}} {{$location->city}} {{$location->zip_code}}</div>
             </div>

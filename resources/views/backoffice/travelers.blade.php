@@ -27,8 +27,10 @@
 
             <tr class="{{$user->uuid}}">
                 @foreach ($user as $key => $value)
-                    @if ($key == 'uuid')
+                    @if ($key == 'uuid' || $key == 'account_type')
                         <td>{{ $value }}</td>
+                    @elseif ($key == 'imgPath' && $value != null && $value != "")
+                        <td><img src="{{ asset("/assets/images/pfp/".$value) }}" alt="profile picture" style="width: 50px; height: 50px;"></td>
                     @else
                         <td contenteditable="true">{{ $value }}</td>
                     @endif
@@ -36,8 +38,9 @@
                 <td>
                     <button class="btn btn-primary btn-sm" onclick="editUser('{{ $user->uuid }}')">Edit</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteUser('{{ $user->uuid }}')">Delete</button>
-                    <!-- If the user is not an admin, display the promote button need to add that when the road in api is done -->
-                    <button class="btn btn-success btn-sm" onclick="promoteUser('{{ $user->uuid }}')">Promote</button>
+                    @if ($user->account_type != "Administateur")
+                        <button class="btn btn-success btn-sm" onclick="promoteUser('{{ $user->uuid }}')">Promote</button>
+                    @endif
                 </td>
             </tr>
         @endforeach

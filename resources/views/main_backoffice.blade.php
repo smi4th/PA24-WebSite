@@ -78,7 +78,7 @@
                     <a href="/backoffice/providers">Bailleurs</a>
                 </div>
             </li>
-            -->
+
             <li>
                 <div class="image">
                     <i class="supports"></i>
@@ -103,6 +103,7 @@
                     <a href="/backoffice/settings">Paramètres</a>
                 </div>
             </li>
+            -->
             <li>
                 <div class="image">
                     <i class="home"></i>

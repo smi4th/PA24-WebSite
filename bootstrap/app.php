@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -19,24 +20,17 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //dd($exceptions);
-        //ignore message bag exception from form request
-        $exceptions->report(function (Throwable $e) {
-            if ($e instanceof ValidationException) {
-                return false;
-            }
-            return true;
-        });
 
         $exceptions->render(function (Throwable $e) {
             //if app is in debug mode,don't show the exception
-            /*if (config('app.debug')) {
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return null;
-            }*/
+            }
+            //dd($e);
             error_log($e->getMessage());
             return response()->view('error', [
                 'message' => 'Error occurred!',
-                'code' => $e->getCode()
+                'code' => $e->status,
             ], 500);
         });
     })->create();

@@ -177,31 +177,6 @@ class BackOfficeController extends Controller
 
     public function users(Request $request): View
     {
-        /*
-         * Ce commentaire est un placeholder pour expliquer ce que fait la méthode travelers
-         * à la personne qui implémentera la méthode travelers
-         *
-         * Pour le moment la méthode travelers renvoie une vue avec des données sous JSON
-         * Le but est de rajouter des requêtes pour récupérer les voyageurs et les afficher sur la page
-         * tout en ajoutant une pagination pour afficher les voyageurs par page
-         * et aussi on ajoutant des méthodes pour filtrer les voyageurs par date, par nom, par prénom
-         * et des actions d'édition, de suppression, de création de voyageurs
-         *
-         * Accessible pour tous les administrateurs et les moderateurs
-         * les moderateurs ne peuvent pas supprimer les voyageurs ni les éditer
-         * seulement en ajouter si besoin il faut un administrateur pour effectuer ces actions
-         *
-         * Ne pas oublier de rajouter des commentaires pour expliquer le code
-         * ne pas oublier le clean Code, en cas de question => discord du Riri
-         * @return View
-
-        error_log("travelers");
-        return view('main_backoffice', [
-            'file_path' => $this->view_path . "travelers",
-            'stack_css' => 'styles_travelers'
-        ]);
-         */
-
         $request->validate([
             'page' => 'integer|min:1',
         ]);
@@ -223,6 +198,23 @@ class BackOfficeController extends Controller
 
             $numberPages = round($data->total / 10);
             $accounts = $data->data;
+
+            $typeAccount = $this->client->get(env('API_URL') . 'account_type?all=true', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+
+            $typeAccount = json_decode($typeAccount->getBody()->getContents());
+            $typeAccount = $typeAccount->data;
+
+            foreach ($accounts as $account){
+                foreach ($typeAccount as $type){
+                    if ($account->account_type == $type->uuid){
+                        $account->account_type = $type->type;
+                    }
+                }
+            }
 
             return view('main_backoffice', [
                 'file_path' => $this->view_path . "travelers",
@@ -363,15 +355,6 @@ class BackOfficeController extends Controller
          * @return View
          */
         return view('backoffice.settings');
-    }
-
-    public function __invoke() : View
-    {
-        /*
-         * Méthode __invoke qui renvoie la vue du backoffice par défaut si on appelle le controller
-         * pour éviter une page blanche en cas de pépin
-         */
-        return view('backoffice');
     }
 
     public function updateUser(Request $request, $id, $information)
