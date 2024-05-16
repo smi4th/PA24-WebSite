@@ -16,7 +16,6 @@ use App\Http\Controllers\StripePaymentController;
 Route::get('/', function () {
     return view('landing');
 });
-Route::match(['get','post'],'/botman', [App\Http\Controllers\BotManController::class, 'handle']);
 /*
 Route::get('/error',function () {
     return view('error');
