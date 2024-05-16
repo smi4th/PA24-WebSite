@@ -1,0 +1,43 @@
+.message {
+    padding: 5px 20px;
+    margin: 5px 0;
+    border-radius: 20px;
+    color: white;
+    max-width: 80%;
+    position: relative;
+    display: flex; 
+    height: 90%;
+    max-height: 15%;
+    flex-direction: column;
+    justify-content: center;
+}
+.tulaspaslui {
+    height: 45vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+.message-content {
+    display: block; 
+    word-wrap: break-word;
+}
+
+.message-date {
+    display: block; 
+    color: #ddd; 
+    font-size: 0.8em; 
+    margin-top: 5px; 
+}
+
+.left {
+    background-color: #007bff;
+    text-align: left;
+    margin-right: auto;
+}
+
+.right {
+    background-color: #28a745;
+    text-align: right;
+    margin-left: auto;
+}

@@ -98,7 +98,7 @@ class AuthController extends Controller
             //dd($responseBody);
             if ($response->getStatusCode() !== 200) {
                 return view('auth.login')->withErrors([
-                    "error" => "Error when load register page"
+                    "error" => "Error when load register page "  . $e->getMessage() . " " . env("API_URL")
                 ]);
             }
             $data = $responseBody['data'];
@@ -106,7 +106,43 @@ class AuthController extends Controller
 
         }catch (GuzzleException $e) {
             return view('auth.login')->withErrors([
-                "error" => "Error when load register page"
+                "error" => "Error when load register page "  . $e->getMessage() . " " . env("API_URL")
+            ]);
+        }
+    }
+    private function getInfoprofile()
+    {
+        //renvoie les infos du compte
+        $client = new Client();
+        $token = session('token');
+        return $client->get(env("API_URL") . 'account?token=' . $token, [
+            'headers' => [
+                'authorization' => 'Bearer ' . $token,
+            ]
+        ]);
+    }
+    public function deleteAccount(){
+        $response = $this->getInfoprofile();
+        $uuid = json_decode($response->getBody()->getContents(), true)['data'][0]['uuid'];
+        $token = session('token');
+        //dd($uuid, $token);
+        try{
+            $this->logout(request());
+            $client = new Client();
+            $response = $client->delete(env("API_URL") . 'account?uuid=' . $uuid, [
+                'headers' => [
+                    'authorization' => 'Bearer ' . $token,
+                ]
+            ]);
+            if ($response->getStatusCode() === 200) {
+                return redirect('/login', 302, [], false)->with('success', 'Delete success!');
+            }
+            return redirect('/login', 302, [], true)->withErrors([
+                "error" => "Error when delete account"
+            ]);
+        }catch (GuzzleException $e) {
+            return redirect('/login', 302, [], true)->withErrors([
+                "error" => "Error when delete account"
             ]);
         }
     }

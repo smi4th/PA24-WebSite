@@ -72,11 +72,14 @@ section:first-child{
                 height: 100%;
                 width: 25%;
                 padding-left: 1%;
+
                 img{
-                    height: 35%;
-                    width: 35%;
+                    height: auto;
+                    min-width: 25%; 
+                    max-width: 25%;
+                    object-fit: contain; 
                 }
-            }
+            }   
             .menu{
                 width: 50%;
                 height: 100%;

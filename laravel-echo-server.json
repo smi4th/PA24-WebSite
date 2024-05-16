@@ -1,0 +1,32 @@
+{
+	"authHost": "https://elobazaar.store/",
+	"authEndpoint": "/broadcasting/auth",
+	"clients": [],
+	"database": "redis",
+	"databaseConfig": {
+		"redis": {},
+		"sqlite": {
+			"databasePath": "/database/laravel-echo-server.sqlite"
+		}
+	},
+	"devMode": true,
+	"host": null,
+	"port": "6001",
+	"protocol": "https",
+	"socketio": {},
+	"secureOptions": 67108864,
+	"sslCertPath": "/etc/letsencrypt/live/elobazaar.store/fullchain.pem",
+	"sslKeyPath": "/etc/letsencrypt/live/elobazaar.store/privkey.pem",
+	"sslCertChainPath": "",
+	"sslPassphrase": "",
+	"subscribers": {
+		"http": true,
+		"redis": true
+	},
+	"apiOriginAllow": {
+		"allowCors": false,
+		"allowOrigin": "",
+		"allowMethods": "",
+		"allowHeaders": ""
+	}
+}

@@ -5,6 +5,7 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use GuzzleHttp\Client;
 
 class Header extends Component
 {
@@ -29,8 +30,18 @@ class Header extends Component
      */
     public function render(): View|Closure|string
     {
-        $values =  ['connected' => $this->connected, 'light' => $this->light, 'profile' => $this->profile];
-        //dd($values);
+
+        $client = new Client();
+        $token = session('token');
+        $response = $client->get(env("API_URL") . 'account?token=' . $token, [
+            'headers' => [
+                'authorization' => 'Bearer ' . $token,
+            ]
+        ]);
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        $values =  ['connected' => $this->connected, 'light' => $this->light, 'profile' => $this->profile, 'data' => $data];
+        //dd($values['data']['data'][0]['imgPath']);
         //die();
         return view('components.header',$values);
     }

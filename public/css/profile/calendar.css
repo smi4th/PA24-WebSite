@@ -1,0 +1,26 @@
+.fc-daygrid-day-number {
+    color: #4A90E2;
+    font-weight: bold;
+}
+
+.fc-toolbar-title {
+    font-size: 20px;
+    color: #333333;
+}
+
+.fc-button {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+}
+
+.fc-button:hover {
+    background-color: #357ABD;
+}
+
+
+@media (max-width: 768px) {
+    .fc-toolbar {
+        flex-direction: column;
+    }
+}
