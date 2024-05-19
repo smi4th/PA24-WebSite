@@ -59,6 +59,8 @@ Route::prefix('/travel')->controller(LocationController::class)->middleware(Chec
     Route::get('/createLocation', 'showCreateLocation');
     Route::post('/createLocation', 'doCreateLocation');
     Route::get('/{id}', 'showLocation');
+    Route::get('/{id}/delete', 'removeLocation')->middleware(CheckIfStaff::class);
+    Route::get('/{id}/approuve', 'approuveLocation')->middleware(CheckIfStaff::class);
     Route::get('/reservation/{id}', 'showReservation');
     Route::post('/reservation/{id}', 'doReservationLocation');
     Route::get('/{any}','index')->where('any', '.*');

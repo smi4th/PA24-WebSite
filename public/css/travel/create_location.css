@@ -81,6 +81,15 @@
 
 
             }
+            .equipments{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-evenly;
+                gap: 5%;
+                margin-bottom: 5%;
+
+            }
             .CTA{
                 display: flex;
                 align-items: center;

@@ -19,7 +19,7 @@
                                 @if(strtolower($bedRoom->imgPath) === "null")
                                     <img src="{{ asset('/assets/images/default_bed_room.jpg') }}" alt="image">
                                 @else
-                                    <img src="{{ asset($bedRoom->imgPath) }}" alt="images">
+                                    <img src="{{ asset('/locations/'.$bedRoom->housing.'/'.$bedRoom->imgPath) }}" alt="image">
                                 @endif
                             </div>
                             <div class="bedroom_description">

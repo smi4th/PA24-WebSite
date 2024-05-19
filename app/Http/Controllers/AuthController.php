@@ -30,16 +30,12 @@ class AuthController extends Controller
 
         try{
             $client = new Client();
-            $response = $client->post(env("API_URL") . 'login', [ //http://localhost:8000/api/login
+            $response = $client->post(env("API_URL") . 'login', [
                 'headers' => $headers,
                 'json' => $body
             ]);
 
             $responseBody = json_decode($response->getBody()->getContents(), true);
-            /*
-             * $responseBody = [
-             *     "token" => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjM
-             */
 
             if ($response->getStatusCode() === 201) {
                 $request->session()->regenerate();
@@ -125,7 +121,6 @@ class AuthController extends Controller
         $response = $this->getInfoprofile();
         $uuid = json_decode($response->getBody()->getContents(), true)['data'][0]['uuid'];
         $token = session('token');
-        //dd($uuid, $token);
         try{
             $this->logout(request());
             $client = new Client();

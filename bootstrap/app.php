@@ -27,11 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return null;
             }
-            //dd($e);
+            $code = $e->status ?? 404;
             error_log($e->getMessage());
             return response()->view('error', [
                 'message' => 'Error occurred!',
-                'code' => $e->status,
+                'code' => $code
             ], 500);
         });
     })->create();

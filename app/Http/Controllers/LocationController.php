@@ -8,6 +8,9 @@ use App\Http\Requests\ReservationRequest;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use DateTime;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use PhpParser\Node\Expr\Array_;
 
 class LocationController extends Controller
 {
@@ -23,8 +26,22 @@ class LocationController extends Controller
     }
     public function index(Request $request)
     {
+        $client = new Client();
         try{
-            $client = new Client();
+            $response = $client->getAsync(env('API_URL') . 'account?token='. $request->session()->get('token'), [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ])->wait();
+            $account = json_decode($response->getBody()->getContents());
+            $accountUuid = $account->data[0]->uuid;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            $accountUuid = "";
+            return redirect('/', 302, [], false);
+        }
+
+        try{
             $response = $client->getAsync(env('API_URL') . 'housing?all=true', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $request->session()->get('token')
@@ -37,6 +54,43 @@ class LocationController extends Controller
             error_log($e->getMessage());
             $locations = [];
         }
+        try{
+            $response = $client->getAsync(env('API_URL') . 'account_subscription?account=' . $accountUuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ])->wait();
+
+            $subscriptions = json_decode($response->getBody()->getContents());
+            if($subscriptions->total === 0){
+                $subscriptions = 1;
+            }else{
+                $subscriptions = $subscriptions->data[0]->subscription;
+            }
+
+            //dd($subscriptions->data[0]);
+            $response = $client->getAsync(env('API_URL') . 'subscription?uuid=' . $subscriptions, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ])->wait();
+
+            $subscription = json_decode($response->getBody()->getContents());
+            $subscription = $subscription->data[0]->VIP;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            $subscription = 0;
+        }
+
+        $publicPath = public_path('assets/publicity');
+        if($subscription == 1) {
+            $allPublicities = [];
+        }else{
+            $allPublicities = File::allFiles($publicPath);
+        }
+        //dd(File::allFiles($publicPath));
+
 
         return view("default",[
             'file_path' => $this->view_path . "main_travel_page",
@@ -44,7 +98,9 @@ class LocationController extends Controller
             'connected' => $this->isAuth(),
             'profile' => false,
             'light' => false,
-            'locations' => $locations
+            'locations' => $locations,
+            'admin' => $this->isAdmin($request->session()->get('token')),
+            'publicities' => $allPublicities
         ]);
     }
 
@@ -106,6 +162,18 @@ class LocationController extends Controller
 
             return redirect('/travel', 302, [], false);
         }
+        $images = [];
+
+        $path = 'public/locations/' . $id;
+
+        if (Storage::exists($path)) {
+            $images = Storage::files('public/locations/' . $id);
+        }
+
+        foreach ($images as $key => $image) {
+            $images[$key] = str_replace('public/', '', $image);
+        }
+
         return view("default", [
             'file_path' => $this->view_path . "offer",
             'stack_css' => 'offers',
@@ -115,7 +183,9 @@ class LocationController extends Controller
             'location' => $locations,
             'reviews' => $nameUsers,
             'users' => $user,
-            'equipments' => $equipments
+            'equipments' => $equipments,
+            'images' => $images,
+            'admin' => $this->isAdmin($request->session()->get('token'))
         ]);
     }
 
@@ -187,7 +257,8 @@ class LocationController extends Controller
             'equipments' => $equipments,
             'start' => $start,
             'end' => $end,
-            'housing' => $id
+            'housing' => $id,
+            'admin' => $this->isAdmin($request->session()->get('token'))
         ]);
     }
 
@@ -343,7 +414,7 @@ class LocationController extends Controller
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'An error occurred when add bedroom']);
         }
-        //try {
+        try {
 
             for ($i = 0; $i < count($equipments); $i++) {
                 for ($j = $i + 1; $j < count($equipments); $j++) {
@@ -368,13 +439,13 @@ class LocationController extends Controller
                     ]
                 ]);
             }
-        /*}catch (\Exception $e){
+        }catch (\Exception $e){
             error_log($e->getMessage());
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['error' => 'An error occurred when add equipment']);
-        }*/
+        }
 
-        //try {
+        try {
 
              if($totalBedRoom === count($dates)){
                 $response = $client->post(env('API_URL') . 'basket/housing', [
@@ -393,12 +464,12 @@ class LocationController extends Controller
 
             return redirect('/travel/reservation/'. $id, 302, [], false)->with('success', 'Reservation success! price = ' . $totalPrice . '€');
 
-        /*}catch (\Exception $e){
+        }catch (\Exception $e){
 
             error_log($e->getMessage());
             $this->deleteTheCurrentBasket($request,$bedRooms,$id,$equipments,$basketUuid);
             return redirect('/travel/reservation/'. $id, 302, [], false)->withErrors(['errors' => 'An error occurred ']);
-        }*/
+        }
 
     }
     private function getTotalPriceBasketLocation($request, $id,$accountUuid)
@@ -503,14 +574,30 @@ class LocationController extends Controller
 
     public function showCreateLocation(Request $request)
     {
-        $client = new Client();
-        $response = $client->get(env('API_URL') . 'house_type?all=true', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $request->session()->get('token')
-            ]
-        ]);
-        $typehouse = json_decode($response->getBody()->getContents());
-        $typehouse = $typehouse->data;
+        try{
+            $client = new Client();
+            $response = $client->get(env('API_URL') . 'house_type?all=true', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $typehouse = json_decode($response->getBody()->getContents());
+            $typehouse = $typehouse->data;
+
+            //equipment type
+            $response = $client->get(env('API_URL') . 'equipment_type?all=true', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $typeequipment = json_decode($response->getBody()->getContents());
+            $typeequipment = $typeequipment->data;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            $typehouse = [];
+            $typeequipment = [];
+        }
 
 
         return view("default", [
@@ -519,14 +606,285 @@ class LocationController extends Controller
             'connected' => $this->isAuth(),
             'profile' => false,
             'light' => false,
-            'house_types' => $typehouse
+            'house_types' => $typehouse,
+            'equipment_types' => $typeequipment
         ]);
     }
+
     public function doCreateLocation(PostLocationRequest $request)
     {
         $data = $request->validated();
         $client = new Client();
-        dd($data);
+        //dd($data);
 
+
+        try {
+            //la création du housing
+            $response = $client->get(env('API_URL') . 'account?token=' . $request->session()->get('token'), [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $account = json_decode($response->getBody()->getContents());
+            $accountUuid = $account->data[0]->uuid;
+
+            $body = [
+                'surface' => $data['surface'],
+                'price' => $data['price_housing'],
+                'street_nb' => $data['street_nb'],
+                'city' => $data['city'],
+                'zip_code' => $data['zip_code'],
+                'street' => $data['street'],
+                'description' => $data['description_housing'],
+                'house_type' => $data['house_type'],
+                'title' => $data['title'],
+                'imgPath' => "null",
+                'account' => $accountUuid
+            ];
+            $response = $client->post(env('API_URL') . 'housing', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => $body
+            ]);
+            $housing = json_decode($response->getBody()->getContents());
+            $housingUuid = $housing->uuid;
+
+            File::ensureDirectoryExists('public/locations/' . $housingUuid);
+            //Storage::makeDirectory('public/locations/' . $housingUuid);
+            foreach ($data['imgPathHousing'] as $img){
+                $img->storeAs($housingUuid, $img->getClientOriginalName(), 'locations');
+            }
+
+            //dd($data['imgPathHousing'][0]->getClientOriginalName());
+            $response = $client->put(env('API_URL') . 'housing?uuid=' . $housingUuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => [
+                    'imgPath' => $data['imgPathHousing'][0]->getClientOriginalName()
+                ]
+            ]);
+
+            //la création des chambres
+
+            $priceBedRoom = $data['price'];
+            $nbPlaces = $data['nbPlaces'];
+            $description = $data['description'];
+            $imgPath = $data['imgPath'];
+
+            if (count($priceBedRoom) !== count($nbPlaces) || count($priceBedRoom) !== count($description) || count($priceBedRoom) !== count($imgPath)){
+                return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing']);
+            }
+
+            for($i = 0; $i < count($priceBedRoom); $i++) {
+                $body = [
+                    'price' => $priceBedRoom[$i+1],
+                    'nbPlaces' => $nbPlaces[$i+1],
+                    'description' => $description[$i+1],
+                    'imgPath' => "null",
+                    'housing' => $housingUuid,
+                    "title" => "Chambre " . $i + 1,
+                ];
+                $response = $client->post(env('API_URL') . 'bed_room', [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ],
+                    'json' => $body
+                ]);
+                $bedRoom = json_decode($response->getBody()->getContents());
+                $bedRoomUuid = $bedRoom->uuid;
+
+                File::ensureDirectoryExists('public/bedrooms/' . $bedRoomUuid);
+                $imgPath[$i+1]->storeAs('public/bedrooms/' . $bedRoomUuid, $imgPath[$i+1]->getClientOriginalName(), 'bedrooms');
+
+                $response = $client->put(env('API_URL') . 'bed_room?uuid=' . $bedRoomUuid, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ],
+                    'json' => [
+                        'imgPath' => $imgPath[$i+1]->getClientOriginalName()
+                    ]
+                ]);
+
+            }
+
+            $equipmentType = $data['equipment_type'];
+            $nameEquipment = $data['nameEquipment'];
+            $descriptionEquipment = $data['descriptionEquipment'];
+            $imgPathEquipment = $data['imgPathEquipment'];
+            if (count($equipmentType) !== count($nameEquipment) || count($equipmentType) !== count($descriptionEquipment) || count($equipmentType) !== count($imgPathEquipment)){
+                return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing'])->withInput(
+                    $request->all()
+                );
+            }
+
+            for($j = 0; $j < count($equipmentType); $j++){
+                $body = [
+                    'name' => $nameEquipment[$j+1],
+                    'description' => $descriptionEquipment[$j+1],
+                    'price' => $data['priceEquipement'][$j+1],
+                    'imgPath' => "null",
+                    'equipment_type' => $equipmentType[$j+1],
+                    'housing' => $housingUuid,
+                    'imgPath' => $imgPathEquipment[$j+1]->getClientOriginalName(),
+                ];
+                $response = $client->post(env('API_URL') . 'equipment', [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ],
+                    'json' => $body
+                ]);
+                $equipment = json_decode($response->getBody()->getContents());
+                $equipmentUuid = $equipment->data->uuid;
+
+                File::ensureDirectoryExists('public/equipments/' . $equipmentUuid);
+                $imgPathEquipment[$j+1]->storeAs('public/equipments/' . $equipmentUuid, $imgPathEquipment[$j+1]->getClientOriginalName(), 'equipments');
+
+            }
+
+            return redirect('/travel/creationLocation', 302, [], false)->with('success', 'Housing created');
+
+
+        }catch (\Exception $e){
+            $this->undoLocation($request, $accountUuid);
+            error_log($e->getMessage());
+            return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing'])->WithInput(
+                $request->all()
+            );
+        }
+    }
+    private function undoLocation(Request $request, $accountUUid , $deleteBug = true)
+    {
+        $admin = $this->isAdmin($request->session()->get('token'));
+        if (!$admin){
+            return;
+        }
+
+        try{
+            $client = new Client();
+            $response = $client->get(env('API_URL') . 'housing?account=' . $accountUUid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $housing = json_decode($response->getBody()->getContents());
+            $housing = $housing->data[0];
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+        try{
+            $response = $client->delete(env('API_URL') . 'bed_room?uuid=' . $housing->uuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+        try {
+            $response = $client->get(env('API_URL') . 'equipment?housing=' . $housing->uuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $response = json_decode($response->getBody()->getContents());
+            $equipments = $response->data;
+            $equipmentsUUID = [];
+            foreach ($equipments as $equipment){
+                $equipmentsUUID[] = $equipment->uuid;
+            }
+
+            foreach ($equipmentsUUID as $equipmentUUID){
+                $response = $client->delete(env('API_URL') . 'equipment?uuid=' . $equipmentUUID, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+            }
+
+            $response = $client->delete(env('API_URL') . 'housing?uuid=' . $housing->uuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+
+            if ($deleteBug){
+                return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing'])->WithInput(
+                    $request->all()
+                );
+            }
+            else{
+                return;
+            }
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+        return;
+    }
+
+    public function removeLocation(Request $request, $id)
+    {
+        if (!$this->isAdmin($request->session()->get('token'))){
+            return redirect('/travel/'.$id, 302, [], false);
+        }
+        $this->undoLocation($request, $id, false);
+
+        return redirect('/travel', 302, [], false);
+    }
+    private function isAdmin($token)
+    {
+        try {
+            $client = new Client();
+
+            $response = $client->get(env('API_URL') . 'account?token=' . $token, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $token
+                ]
+            ]);
+            $account = json_decode($response->getBody()->getContents());
+            $accountUuid = $account->data[0]->uuid;
+
+            $response = $client->get(env('API_URL') . 'admin?account=' . $accountUuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $token
+                ]
+            ]);
+            $account = json_decode($response->getBody()->getContents());
+            return (bool)$account->admin;
+
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
+        return false;
+    }
+
+    public function approuveLocation(Request $request, $id)
+    {
+        if (!$this->isAdmin($request->session()->get('token'))){
+            return redirect('/travel/'.$id, 302, [], false);
+        }
+
+        try {
+            $client = new Client();
+            $response = $client->put(env('API_URL') . 'housing?uuid=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => [
+                    'validated' => 1
+                ]
+            ]);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+
+        }
+
+        return redirect('/travel/'.$id, 302, [], false);
     }
 }

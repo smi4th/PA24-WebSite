@@ -5,6 +5,17 @@
 @section('content')
 
     <div class="container">
+        @if($admin && $location->validated == 0)
+            <div class="admin_layout">
+                    <button id="good" onclick="window.location.href='/travel/{{$location->uuid}}/approuve'">Valider</button>
+                    <button id="bad" onclick="window.location.href='/travel/{{$location->uuid}}/delete'">Supprimer</button>
+            </div>
+        @else
+            <div class="admin_layout">
+                <button id="good" onclick="window.location.href='/travel'">Retour</button>
+            </div>
+        @endif
+
         <div class="offer_image_layout">
             @if($location->imgPath == "NULL")
                 <div class="image">
@@ -12,7 +23,7 @@
                 </div>
             @else
                 <div class="image">
-                    <img src="{{ asset($location->imgPath)}}" alt="image">
+                    <img src="{{ asset('locations/'.$location->uuid.'/'.$location->imgPath)}}" alt="image">
                 </div>
             @endif
             <div class="content">
@@ -33,7 +44,25 @@
                 </ul>
             </div>
         @endif
+        <div class="other_images">
+            <div class="title">
+                <h3>Autres images</h3>
+            </div>
+            <div class="layout">
+                @foreach($images as $image)
+                    @if(strtolower($image) == "null")
+                        <div class="image">
+                            <img src="{{ asset('/assets/images/maison_default.png') }}" alt="image">
+                        </div>
+                    @else
+                        <div class="image">
+                            <img src="{{ asset($image)}}" alt="image">
+                        </div>
+                    @endif
 
+                @endforeach
+            </div>
+        </div>
         <div class="offer_form">
             <form action="reservation/{{$location->uuid}}" method="GET">
                 @csrf

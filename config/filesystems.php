@@ -60,6 +60,22 @@ return [
             'throw' => false,
         ],
 
+        'bedrooms' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/bedrooms'),
+            'url' => env('APP_URL').'/storage/bedrooms',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+        'equipments' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/equipments'),
+            'url' => env('APP_URL').'/storage/equipments',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -88,6 +104,9 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('receipts') => storage_path('app/public/receipts'),
+        public_path('locations') => storage_path('app/public/locations'),
+        public_path('bedrooms') => storage_path('app/public/bedrooms'),
+        public_path('equipments') => storage_path('app/public/equipments'),
     ],
 
 ];
