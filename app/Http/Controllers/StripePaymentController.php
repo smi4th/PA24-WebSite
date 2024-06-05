@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Stripe\Stripe;
+use function Laravel\Prompts\error;
 
 class StripePaymentController extends Controller
 {
@@ -143,6 +144,118 @@ class StripePaymentController extends Controller
 
         return redirect()->away($session->url);
     }
+
+    public function subscription(Request $request)
+    {
+        /*
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+        \Stripe\Stripe::setApiVersion('2024-04-10');
+
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET_KEY'));
+
+        try {
+            $client = new Client();
+            $response = $client->get(env('API_URL') . 'subscription?all=true', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+
+            $subscriptions = json_decode($response->getBody()->getContents());
+            $subscriptions = $subscriptions->data;
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors(['error' => 'An error occured while fetching subscriptions']);
+        }
+
+        $line_items = [];
+        foreach ($subscriptions as $subscription) {
+            if (strtolower($subscription->imgPath) == null) {
+                $subscription->imgPath = 'https://via.placeholder.com/150';
+            }
+
+            try {
+                $product = \Stripe\Product::retrieve($subscription->uuid);
+            } catch (\Stripe\Exception\InvalidRequestException $e) {
+                $product = null;
+            }
+
+            if ($product) {
+                // Optionally, delete the old prices if needed
+                $prices = \Stripe\Price::all(['product' => $subscription->uuid]);
+                foreach ($prices as $price) {
+                    \Stripe\Price::update($price->id, ['active' => false]);
+                }
+            } else {
+                $product = \Stripe\Product::create([
+                    'id' => $subscription->uuid,
+                    'name' => $subscription->description,
+                    'images' => [$subscription->imgPath],
+                    'metadata' => [
+                        'duration' => $subscription->duration,
+                        'ads' => $subscription->ads ? 'Oui' : 'Non',
+                        'VIP' => $subscription->VIP ? 'Oui' : 'Non',
+                    ]
+                ]);
+            }
+
+            // Create different prices for the product
+            $price_tiers = [
+                [
+                    'unit_amount' => (int)$subscription->price * 100,
+                    'currency' => 'eur',
+                    'recurring' => ['interval' => 'month'],
+                    'metadata' => ['tier' => 'Standard']
+                ],
+                [
+                    'unit_amount' => (int)($subscription->price * 1.5) * 100,
+                    'currency' => 'eur',
+                    'recurring' => ['interval' => 'month'],
+                    'metadata' => ['tier' => 'Premium']
+                ],
+                [
+                    'unit_amount' => (int)($subscription->price * 2) * 100,
+                    'currency' => 'eur',
+                    'recurring' => ['interval' => 'month'],
+                    'metadata' => ['tier' => 'VIP']
+                ]
+            ];
+
+            foreach ($price_tiers as $tier) {
+                $price = \Stripe\Price::create([
+                    'product' => $subscription->uuid,
+                    'unit_amount' => $tier['unit_amount'],
+                    'currency' => $tier['currency'],
+                    'recurring' => $tier['recurring'],
+                    'metadata' => $tier['metadata']
+                ]);
+
+                $line_items[] = [
+                    'price' => $price->id,
+                    'quantity' => 1,
+                ];
+            }
+        }
+
+        $session = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => $line_items,
+            'mode' => 'subscription',
+            'success_url' => url('/basketPayment/successSubscription'),
+            'cancel_url' => route('cancel'),
+        ]);
+
+        return redirect()->away($session->url);
+        */
+        return view("default",[
+            'file_path' => 'subscription',
+            'stack_css' => 'subscription',
+            'connected' => true,
+            'profile' => false,
+            'light' => false
+        ]);
+    }
+
     public function webhook(Request $request)
     {
         error_log('webhook');
@@ -167,10 +280,13 @@ class StripePaymentController extends Controller
         }
 
         switch ($event->type) {
-            case 'payment_intent.succeeded':
+
+            case 'checkout.session.completed':
                 $paymentIntent = $event->data->object;
+                return $this->successSubscription($request);
+
             default:
-                // Unexpected event type
+                error_log($event->type);
                 http_response_code(400);
                 exit();
         }
@@ -179,10 +295,16 @@ class StripePaymentController extends Controller
 
     public function cancel()
     {
+        error_log('cancel');
         return redirect('/profile',302,[],false)->withErrors(['error' => 'Payment canceled']);
     }
 
-    public function success(Request $request)
+    public function successSubscription(Request $request)
+    {
+        return redirect('/profile',302,[],false)->with('success', 'Subscription success');
+    }
+
+    public function successPayment(Request $request)
     {
         //call an other controller
         //return app()->call('App\Http\Controllers\StripePaymentController@success', ['request' => $request]);
@@ -201,6 +323,22 @@ class StripePaymentController extends Controller
         }
 
         $pdf = (new PdfGeneratorController())->generateReceipt($basket,$account);
+
+        try{
+            $client = new Client();
+            $response = $client->put(env('API_URL') . 'basket?uuid='.$basket->uuid, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => [
+                    'paid' => '1'
+                ]
+            ]);
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'An error occured while updating basket']);
+        }
 
         return redirect('/profile',302,[],false)->with('success', 'Payment success');
 

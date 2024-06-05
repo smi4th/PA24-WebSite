@@ -76,8 +76,10 @@ Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(Presta
 
 Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(StripePaymentController::class)->group(function () {
     Route::get('/', 'checkout');
+    Route::get('/subscription', 'subscription');
+    Route::get('/successSubscription', 'successSubscription');
     Route::post('/webhook', 'webhook');
-    Route::get('/success', 'success')->name('success');
+    Route::get('/success', 'successPayment')->name('success');
     Route::get('/cancel', 'cancel')->name('cancel');
     Route::get('/{any}','index')->where('any', '.*');
 });
@@ -85,6 +87,8 @@ Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(Stri
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
     Route::get('/', 'showProfile')->name('profile');
     route::post('/', 'updateProfile')->name('update_profile');
+    Route::get('/reviews', 'showReviews');
+    Route::post('/addReview', 'addReviews');
     Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
     Route::post('/profile/upload', 'uploadProfileImage')->name('profile.upload');
     Route::get('/{any}','index')->where('any', '.*');

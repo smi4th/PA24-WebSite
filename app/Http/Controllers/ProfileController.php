@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\ReviewsRequest;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Monolog\Handler\ErrorLogHandler;
@@ -143,7 +144,7 @@ class ProfileController extends Controller
                 'headers' => ['authorization' => 'Bearer ' . $token],
                 'json' => $body
             ]);
-            
+
 
             if ($response->getStatusCode() == 200) {
                 return redirect('/profile', 302, [], false)->with('success', 'Profile updated!');
@@ -181,4 +182,128 @@ class ProfileController extends Controller
         }
         return redirect('/profile', 302, [], false)->with('success', 'Profile picture updated!');
     }
+
+    public function showReviews(Request $request)
+    {
+        try{
+            $client = new Client();
+            $token = $request->session()->get('token');
+
+            $response = $client->get(env("API_URL") . 'account?token='.$token, [
+                'headers' => [
+                    "Authorization" => "Bearer ". $token
+                ]
+            ]);
+            $account = json_decode($response->getBody()->getContents());
+            $account = $account->data[0]->uuid;
+
+            $response = $client->get(env("API_URL") . 'basket?account='.$account, [
+                'headers' => [
+                    "Authorization" => "Bearer ". $token
+                ]
+            ]);
+            $baskets = json_decode($response->getBody()->getContents());
+
+            $allBaskets = [];
+            $baskets = $baskets->baskets;
+
+            for ($i = 0; $i < count($baskets); $i++){
+
+                if($baskets[$i]->paid != 1){
+                    continue;
+                }
+                $allBaskets[] = $baskets[$i];
+            }
+
+            $response = $client->get(env("API_URL") . 'review?account='.$account, [
+                'headers' => [
+                    "Authorization" => "Bearer ". $token
+                ]
+            ]);
+            $reviews = json_decode($response->getBody()->getContents());
+            $reviews = $reviews->data;
+
+            if(count($allBaskets) == 0){
+                return redirect('/profile', 302, [], false)->withErrors([
+                    "error" => "Vous n'avez pas de reviews en attente"
+                ]);
+            }
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Error when get reviews: " . $e->getMessage()
+            ]);
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "reviews",
+            'stack_css' => 'reviews',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            "basketsPaid" => $allBaskets,
+            "reviews" => $reviews,
+            "currentDate" => strtotime(date("Y-m-d"))
+        ]);
+    }
+
+    public function addReviews(ReviewsRequest $request){
+        //var_dump($request);
+        $data = $request->validated();
+        $client = new Client();
+        $accountUUID;
+        try {
+            $response = $client->get(env("API_URL") . 'account?token='.$request->session()->get('token'), [
+                'headers' => [
+                    "Authorization" => "Bearer ". $request->session()->get('token')
+                ]
+            ]);
+            $accountUUID = json_decode($response->getBody()->getContents());
+            $accountUUID = $accountUUID->data[0]->uuid;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile/reviews', 302, [], false)->withErrors([
+                "error" => "Error when get account: "
+            ]);
+        }
+
+        $body = [
+            "content" => $data['comment'],
+            "note" => $data['note'],
+            "account" => $accountUUID,
+        ];
+
+        if(isset($request->bedroom)){
+            $body["bedRoom"] = $request->bedroom;
+        }
+        elseif(isset($request->service)){
+            $body["service"] = $request->service;
+        }
+        elseif(isset($request->housing)){
+            $body["housing"] = $request->housing;
+        }else{
+            return redirect('/profile/reviews', 302, [], false)->withErrors([
+                "error" => "Error when add review: housing is required"
+            ]);
+        }
+        //dd($body);
+        try {
+            $response = $client->post(env("API_URL") . 'review', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token'),
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $body
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile/reviews', 302, [], false)->withErrors([
+                "error" => "Error when add review"
+            ]);
+        }
+
+        return redirect('/profile/reviews', 302, [], false)->with('success', 'Review added!');
+    }
+
 }

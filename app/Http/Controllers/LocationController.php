@@ -76,7 +76,7 @@ class LocationController extends Controller
             ])->wait();
 
             $subscription = json_decode($response->getBody()->getContents());
-            $subscription = $subscription->data[0]->VIP;
+            $subscription = $subscription->data[0]->ads;
 
         }catch (\Exception $e){
             error_log($e->getMessage());
@@ -111,7 +111,7 @@ class LocationController extends Controller
          * et les équipements disponibles pour cette location
          */
 
-        try {
+        //try {
             $client = new Client();
             $response = $client->getAsync(env('API_URL') . 'housing?uuid=' . $id, [
                 'headers' => [
@@ -120,7 +120,6 @@ class LocationController extends Controller
             ])->wait();
             $locations = json_decode($response->getBody()->getContents());
             $locations = $locations->data[0];
-
             $response = $client->getAsync(env('API_URL') . 'review?housing=' . $id , [
                 'headers' => [
                     "Authorization" => "Bearer " . $request->session()->get('token')
@@ -131,17 +130,18 @@ class LocationController extends Controller
 
             $user = [];
             $nameUsers = [];
-            for($i = 0; $i < count($reviews); $i++){
 
+            for($i = 0; $i < count($reviews); $i++){
                 $response = $client->getAsync(env('API_URL') . 'account?uuid=' . $reviews[$i]->account, [
                     'headers' => [
                         "Authorization" => "Bearer " . $request->session()->get('token')
                     ]
                 ])->wait();
+                echo "</br>";
                 $data = json_decode($response->getBody()->getContents());
 
                 $nameUsers[$i] = $reviews[$i];
-                $user[$i] = $data->data[$i];
+                $user[$i] = $data->data[0];
             }
 
             $equipments = [];
@@ -154,14 +154,14 @@ class LocationController extends Controller
             $equipments = $equipments->data;
 
 
-        } catch (\Exception $e) {
+        /*} catch (\Exception $e) {
             error_log($e->getMessage());
             $locations = empty($locations) ? [] : $locations;
             $nameUsers = empty($nameUsers) ? [] : $nameUsers;
             $equipments = empty($equipments) ? [] : $equipments;
 
             return redirect('/travel', 302, [], false);
-        }
+        }*/
         $images = [];
 
         $path = 'public/locations/' . $id;

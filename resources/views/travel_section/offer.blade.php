@@ -90,7 +90,7 @@
                                 </div>
                             @else
                                 <div class="profile_picture">
-                                    <img src="{{ asset($users[$i]->imgPath) }}" alt="image">
+                                    <img src="{{ asset('/assets/images/pfp/'.$users[$i]->imgPath) }}" alt="image">
                                 </div>
                             @endif
                             <div class="user">{{$users[$i]->username}}</div>
