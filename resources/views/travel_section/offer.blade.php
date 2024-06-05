@@ -101,7 +101,13 @@
                                 <i class="star"></i>
                             @endfor
                         </div>
+                        @if($admin)
+                            <div class="admin_layout">
+                                <button id="bad" onclick="window.location.href='/reviews/{{$reviews[$i]->uuid}}/delete'">Supprimer</button>
+                            </div>
+                        @endif
                     </div>
+
                 @endfor
             </div>
         </div>

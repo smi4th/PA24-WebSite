@@ -87,11 +87,17 @@ Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(Stri
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
     Route::get('/', 'showProfile')->name('profile');
     route::post('/', 'updateProfile')->name('update_profile');
-    Route::get('/reviews', 'showReviews');
-    Route::post('/addReview', 'addReviews');
     Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
     Route::post('/profile/upload', 'uploadProfileImage')->name('profile.upload');
     Route::get('/{any}','index')->where('any', '.*');
+
+});
+
+
+Route::prefix('/reviews')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
+    Route::get('/', 'showReviews');
+    Route::post('/addReview', 'addReviews');
+    Route::get('/{id}/delete', 'removeReviews')->middleware(CheckIfStaff::class);
 });
 
 Route::prefix('/planning')->middleware(CheckIfAuth::class)->controller(PlanningController::class)->group(function () {

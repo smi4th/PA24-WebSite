@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\ReviewsRequest;
+use http\Exception\BadConversionException;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Monolog\Handler\ErrorLogHandler;
@@ -306,4 +307,22 @@ class ProfileController extends Controller
         return redirect('/profile/reviews', 302, [], false)->with('success', 'Review added!');
     }
 
+    public function removeReviews(Request $request, $id)
+    {
+        $client = new Client();
+        try {
+            $response = $client->delete(env("API_URL") . 'review?uuid=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            return back()->withErrors([
+                "error" => "Error when remove review"
+            ]);
+        }
+
+        return back()->with('success', 'Review removed!');
+    }
 }

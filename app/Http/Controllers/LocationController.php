@@ -111,7 +111,7 @@ class LocationController extends Controller
          * et les équipements disponibles pour cette location
          */
 
-        //try {
+        try {
             $client = new Client();
             $response = $client->getAsync(env('API_URL') . 'housing?uuid=' . $id, [
                 'headers' => [
@@ -137,7 +137,6 @@ class LocationController extends Controller
                         "Authorization" => "Bearer " . $request->session()->get('token')
                     ]
                 ])->wait();
-                echo "</br>";
                 $data = json_decode($response->getBody()->getContents());
 
                 $nameUsers[$i] = $reviews[$i];
@@ -154,14 +153,14 @@ class LocationController extends Controller
             $equipments = $equipments->data;
 
 
-        /*} catch (\Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage());
             $locations = empty($locations) ? [] : $locations;
             $nameUsers = empty($nameUsers) ? [] : $nameUsers;
             $equipments = empty($equipments) ? [] : $equipments;
 
             return redirect('/travel', 302, [], false);
-        }*/
+        }
         $images = [];
 
         $path = 'public/locations/' . $id;
