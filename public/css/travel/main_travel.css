@@ -40,14 +40,15 @@
                 padding: 5px;
                 h3{
                     font-size: 1.2rem;
-                    font-weight: bold;
                     color: var(--dark-blue-grey);
                     font-family: "Maitree", sans-serif;
+                    font-weight: 300;
                 }
                 p{
                     font-size: 1rem;
                     color: var(--dark-blue-grey);
-                    font-family: "poppins", sans-serif;
+                    font-family: "Poppins", sans-serif;
+                    font-weight: 300;
                 }
                 a{
                     text-decoration: none;

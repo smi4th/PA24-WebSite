@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Dompdf\Dompdf;
 use Barryvdh\DomPDF\Facade\Pdf;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
+use \Stripe\Stripe;
 
 class PdfGeneratorController extends Controller
 {
@@ -50,8 +52,7 @@ class PdfGeneratorController extends Controller
             $total += $house->price;
         }
 
-
-        $pdf = PDF::loadView('template_pdf.receipt', [
+        $pdf = Pdf::loadView('template_pdf.receipt', [
             'housing' => $housing,
             'services' => $services,
             'bedrooms' => $bedrooms,
@@ -59,9 +60,10 @@ class PdfGeneratorController extends Controller
             'total' => $total,
             'account' => $account
         ]);
+
         $name = 'receipt_'.$basket->uuid.'.pdf';
 
-        Storage::disk('receipts')->put($name, $pdf->output());
+        Storage::disk('wasabi')->put('receipts/', $pdf->output());
 
         //METTRE ICI LE CODE POUR ENVOYER L'INFORMATION A L'API POUR L'ENREGISTREMENT DU RECU
 

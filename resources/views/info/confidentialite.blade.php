@@ -17,7 +17,7 @@
         <h1>Politique de confidentialité</h1>
         <div><br></div>
         <div><strong>Introduction</strong></div>
-        <div>Devant le développement des nouveaux outils de communication, il est nécessaire de porter une attention particulière à la protection de la vie privée. C’est pourquoi, nous nous engageons à respecter la confidentialité des renseignements personnels que nous collectons.</div>
+        <div>Devant le développement des nouveaux outils de communication, il est nécessaire de porter une attention particulière à la protection de la vie privée. C’est pourquoi, nous nous engageons à respecter la confidentialité des données personnelles que nous collectons.</div>
         <div><br></div>
         <h2>Collecte des renseignements personnels</h2>
         <div><br></div>
@@ -25,7 +25,7 @@
             <ul>
                 <li>Prénom</li>
                 <li>Adresse électronique</li>
-                <li>Numéro de téléphone / télécopieur</li>
+                <li>Numéro de téléphone</li>
             </ul>
         </div>
         <div>Les renseignements personnels que nous collectons sont recueillis au travers de formulaires et grâce à l’interactivité établie entre vous et notre site Web. Nous utilisons également, comme indiqué dans la section suivante, des fichiers témoins et/ou journaux pour réunir des informations vous concernant.</div>
@@ -36,6 +36,9 @@
         <div>
             <ul>
                 <li>Formulaire d'inscription au site Web</li>
+                <li>Formulaire de payement</li>
+                <li>Formulaire de mise en location</li>
+                <li>Formulaire de mise en ligne d'offre de prestation</li>
             </ul>
         </div>
         <div>Nous utilisons les renseignements ainsi collectés pour les finalités suivantes :</div>
@@ -52,14 +55,6 @@
         <div>
             <ul>
                 <li>Commentaires </li>
-            </ul>
-        </div>
-        <div>Nous utilisons les renseignements ainsi collectés pour les finalités suivantes :</div>
-        <div><br></div>
-        <div>
-            <ul>
-                <li>Statistiques</li>
-                <li>Contact </li>
             </ul>
         </div>
         <div><br></div>
@@ -100,10 +95,11 @@
             </ul>
         </div>
         <div>Nous nous engageons à maintenir un haut degré de confidentialité en intégrant les dernières innovations technologiques permettant d’assurer la confidentialité de vos transactions. Toutefois, comme aucun mécanisme n’offre une sécurité maximale, une part de risque est toujours présente lorsque l’on utilise Internet pour transmettre des renseignements personnels.</div>
-        
+
         <p>
             Ce site est édité par Paris Caretaker, 15 Rue des Lilas, 75014, Paris.
         </p>
+        <p><strong>Ce site fait parti d'un projet étudiant, la société étant fictive et sujet du projet</strong></p>
     </div>
     <x-footer />
 </body>

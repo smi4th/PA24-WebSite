@@ -34,6 +34,7 @@
         <p>
             Ce site est édité par Paris Caretaker, 15 Rue des Lilas, 75014, Paris.
         </p>
+        <p><strong>Ce site fait parti d'un projet étudiant, la société étant fictive et sujet du projet</strong></p>
     </div>
     <x-footer />
 </body>

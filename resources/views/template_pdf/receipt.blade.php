@@ -42,7 +42,6 @@
                     <hr>
                     <h3>Services</h3>
                     @foreach ($services as $service)
-                        <p>Nom: {{ $service->name }}</p>
                         <p>Description: {{ $service->description }}</p>
                         <p>Prix: {{ $service->price }}</p>
                     @endforeach

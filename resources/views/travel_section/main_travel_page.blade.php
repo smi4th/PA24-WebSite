@@ -17,7 +17,7 @@
                             @if(strtolower($location->imgPath) == "null")
                                 <img src="{{ asset('/assets/images/maison_default.png') }}" alt="image">
                             @else
-                                <img src="{{ asset('locations/'.$location->uuid.'/'.$location->imgPath) }}" alt="image">
+                                <img src="{{ Storage::disk('wasabi')->url('locations/'.$location->uuid.'/'.$location->imgPath) }}" alt="image_offre">
                             @endif
                         </div>
                         <div class="card_content">

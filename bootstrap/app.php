@@ -19,11 +19,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 'basketPayment/*',
             ]
         );
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
         $exceptions->render(function (Throwable $e) {
             //if app is in debug mode,don't show the exception
+            /*if (env('APP_DEBUG')) {
+                return null;
+            }*/
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return null;
             }

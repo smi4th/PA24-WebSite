@@ -12,7 +12,7 @@
                         @if(strtolower($service->imgPath) == "null")
                             <img src="{{ asset('/assets/images/default_services.jpg') }}" alt="image">
                         @else
-                            <img src="{{ asset($service->imgPath)}}" alt="image">
+                            <img src="{{ Storage::disk('s3')->url($service->imgPath) }}}}" alt="image">
                         @endif
                     </div>
                     <div class="card_content">

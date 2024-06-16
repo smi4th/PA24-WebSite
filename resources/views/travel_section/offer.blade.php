@@ -56,7 +56,7 @@
                         </div>
                     @else
                         <div class="image">
-                            <img src="{{ asset($image)}}" alt="image">
+                            <img src="{{ Storage::disk('wasabi')->url('$image') }}" alt="image">
                         </div>
                     @endif
 

@@ -30,6 +30,7 @@
         <p><b>Utilisateur :</b> Internaute se connectant, utilisant le site susnommé.</p>
         <p><b>Informations personnelles :</b> « Les informations qui permettent, sous quelque forme que ce soit, directement ou non, l'identification des personnes physiques auxquelles elles s'appliquent » (article 4 de la loi n° 78-17 du 6 janvier 1978).</p>
         <p>Les termes « données à caractère personnel », « personne concernée », « sous traitant » et « données sensibles » ont le sens défini par le Règlement Général sur la Protection des Données (RGPD : n° 2016-679)</p>
+        <p>Contenu copié coller ou générer par IA en sah je sais pas xd</p>
 
         <h2>1. Présentation du site internet.</h2>
         <p>En vertu de l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, il est précisé aux utilisateurs du site internet <a href="https://pariscaretaker.fr">https://pariscaretaker.fr</a> l'identité des différents intervenants dans le cadre de sa réalisation et de son suivi:
@@ -240,6 +241,8 @@
         <p>
             Ce site est édité par Paris Caretaker, 15 Rue des Lilas, 75014, Paris.
         </p>
+
+        <p><strong>Ce site fait parti d'un projet étudiant, la société étant fictive et sujet du projet</strong></p>
     </div>
     <x-footer />
 </body>

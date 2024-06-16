@@ -15,6 +15,10 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
+
+    //'default' => 'wasabi',
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -44,37 +48,6 @@ return [
             'throw' => false,
         ],
 
-        'receipts' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/receipts'),
-            'url' => env('APP_URL').'/storage/receipts',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        'locations' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/locations'),
-            'url' => env('APP_URL').'/storage/locations',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        'bedrooms' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/bedrooms'),
-            'url' => env('APP_URL').'/storage/bedrooms',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        'equipments' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/equipments'),
-            'url' => env('APP_URL').'/storage/equipments',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
 
         's3' => [
             'driver' => 's3',
@@ -87,6 +60,18 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
+
+        'wasabi' => [
+            'driver' => 's3',
+            'key' => env('WAS_ACCESS_KEY_ID'),
+            'secret' => env('WAS_SECRET_ACCESS_KEY'),
+            'region' => env('WAS_DEFAULT_REGION'),
+            'bucket' => env('WAS_BUCKET'),
+            'endpoint' => 'https://s3.'.env('WAS_DEFAULT_REGION') . '.wasabisys.com',//' . env('WAS_BUCKET').'/', //env('WAS_URL'),
+            'url' =>'https://storagePcs0.b-cdn.net/',// 'https://s3.'.env('WAS_DEFAULT_REGION') . '.wasabisys.com/'.env('WAS_BUCKET').'/' ,//'', //'WAS_BUCKET') . '/',
+            'throw' => false,
+        ],
+
 
     ],
 
@@ -103,10 +88,6 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
-        public_path('receipts') => storage_path('app/public/receipts'),
-        public_path('locations') => storage_path('app/public/locations'),
-        public_path('bedrooms') => storage_path('app/public/bedrooms'),
-        public_path('equipments') => storage_path('app/public/equipments'),
     ],
 
 ];

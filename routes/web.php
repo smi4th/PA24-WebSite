@@ -12,6 +12,7 @@ use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\StripePaymentController;
+use App\Http\Controllers\TicketController;
 
 Route::get('/', function () {
     return view('landing');
@@ -54,6 +55,7 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class,CheckIfStaff::class)
     Route::get('/{any}','index')->where('any', '.*');
 });
 
+
 Route::prefix('/travel')->controller(LocationController::class)->middleware(CheckIfAuth::class)->group(function () {
     Route::get('/', 'index');
     Route::get('/createLocation', 'showCreateLocation');
@@ -84,15 +86,25 @@ Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(Stri
     Route::get('/{any}','index')->where('any', '.*');
 });
 
+Route::prefix('/demandSupport')->middleware(CheckIfAuth::class)->controller(TicketController::class)->group(function () {
+    Route::get('/', 'showDemandSupport');
+    Route::post('/createDemand', 'doDemandSupport')->name('createDemand');
+});
+
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
     Route::get('/', 'showProfile')->name('profile');
     route::post('/', 'updateProfile')->name('update_profile');
     Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
     Route::post('/profile/upload', 'uploadProfileImage')->name('profile.upload');
+    Route::get('/ticket/{id}', 'showTicket');
     Route::get('/{any}','index')->where('any', '.*');
 
 });
 
+Route::prefix('/tickets')->middleware(CheckIfAuth::class)->controller(TicketController::class)->group(function () {
+    Route::get('/', 'showTickets');
+    Route::post('/addTicket', 'addTickets');
+});
 
 Route::prefix('/reviews')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
     Route::get('/', 'showReviews');

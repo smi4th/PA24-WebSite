@@ -10,7 +10,9 @@ use GuzzleHttp\Client;
 use DateTime;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\View\View;
 use PhpParser\Node\Expr\Array_;
+use Illuminate\Support\Facades\Log;
 
 class LocationController extends Controller
 {
@@ -26,6 +28,7 @@ class LocationController extends Controller
     }
     public function index(Request $request)
     {
+        Log::info('Index method called');
         $client = new Client();
         try{
             $response = $client->getAsync(env('API_URL') . 'account?token='. $request->session()->get('token'), [
@@ -35,6 +38,7 @@ class LocationController extends Controller
             ])->wait();
             $account = json_decode($response->getBody()->getContents());
             $accountUuid = $account->data[0]->uuid;
+
         }catch (\Exception $e){
             error_log($e->getMessage());
             $accountUuid = "";
@@ -76,6 +80,7 @@ class LocationController extends Controller
             ])->wait();
 
             $subscription = json_decode($response->getBody()->getContents());
+
             $subscription = $subscription->data[0]->ads;
 
         }catch (\Exception $e){
@@ -89,8 +94,6 @@ class LocationController extends Controller
         }else{
             $allPublicities = File::allFiles($publicPath);
         }
-        //dd(File::allFiles($publicPath));
-
 
         return view("default",[
             'file_path' => $this->view_path . "main_travel_page",
@@ -163,11 +166,10 @@ class LocationController extends Controller
         }
         $images = [];
 
-        $path = 'public/locations/' . $id;
+        $path = 'locations/' . $id;
 
-        if (Storage::exists($path)) {
-            $images = Storage::files('public/locations/' . $id);
-        }
+        $images = Storage::disk('wasabi')->allFiles($path);
+
 
         foreach ($images as $key => $image) {
             $images[$key] = str_replace('public/', '', $image);
@@ -610,8 +612,26 @@ class LocationController extends Controller
         ]);
     }
 
-    public function doCreateLocation(PostLocationRequest $request)
+    public function doCreateLocation(Request $request)
     {
+        $data = $request->all();
+
+        $image = $request->file('imgPathEquipment')[1];
+
+        // Créer le chemin de destination
+        $path = 'equipments/id/' . $image->getClientOriginalName();
+
+        // Stocker l'image sur le disque Wasabi
+        Storage::disk('wasabi')->put($path, file_get_contents($image->getRealPath()));
+
+        // Rendre le fichier public
+        Storage::disk('wasabi')->setVisibility($path, 'public');
+
+        echo "<img src='https://s3.eu-west-2.wasabisys.com/storage.pcs/" . $path . "' alt='image' />";
+        die();
+        //return redirect('/travel/creationLocation', 302, [], false)->with('success', 'Location created');
+
+        /*
         $data = $request->validated();
         $client = new Client();
         //dd($data);
@@ -648,14 +668,13 @@ class LocationController extends Controller
             ]);
             $housing = json_decode($response->getBody()->getContents());
             $housingUuid = $housing->uuid;
-
-            File::ensureDirectoryExists('public/locations/' . $housingUuid);
-            //Storage::makeDirectory('public/locations/' . $housingUuid);
             foreach ($data['imgPathHousing'] as $img){
-                $img->storeAs($housingUuid, $img->getClientOriginalName(), 'locations');
+                //$img->storeAs('locations/' . $housingUuid, $img->getClientOriginalName(), 'wasabi');
+                Storage::disk('wasabi')->makeDirectory('locations/' . $housingUuid . '/');
+                Storage::disk('wasabi')->put('locations/' . $housingUuid . '/'.$img->getClientOriginalName(), $img->getClientOriginalName());
             }
 
-            //dd($data['imgPathHousing'][0]->getClientOriginalName());
+            //dd($data['imgPathHousing']);
             $response = $client->put(env('API_URL') . 'housing?uuid=' . $housingUuid, [
                 'headers' => [
                     "Authorization" => "Bearer " . $request->session()->get('token')
@@ -693,9 +712,8 @@ class LocationController extends Controller
                 ]);
                 $bedRoom = json_decode($response->getBody()->getContents());
                 $bedRoomUuid = $bedRoom->uuid;
-
-                File::ensureDirectoryExists('public/bedrooms/' . $bedRoomUuid);
-                $imgPath[$i+1]->storeAs('public/bedrooms/' . $bedRoomUuid, $imgPath[$i+1]->getClientOriginalName(), 'bedrooms');
+                Storage::disk('wasabi')->makeDirectory('bedrooms/' . $bedRoomUuid . '/');
+                Storage::disk('wasabi')->put('bedrooms/' . $bedRoomUuid . '/'. $imgPath[$i+1]->getClientOriginalName(), $imgPath[$i+1]->getClientOriginalName());
 
                 $response = $client->put(env('API_URL') . 'bed_room?uuid=' . $bedRoomUuid, [
                     'headers' => [
@@ -723,11 +741,12 @@ class LocationController extends Controller
                     'name' => $nameEquipment[$j+1],
                     'description' => $descriptionEquipment[$j+1],
                     'price' => $data['priceEquipement'][$j+1],
-                    'imgPath' => "null",
+                    'number' => "1",
                     'equipment_type' => $equipmentType[$j+1],
                     'housing' => $housingUuid,
                     'imgPath' => $imgPathEquipment[$j+1]->getClientOriginalName(),
                 ];
+                //dd($body);
                 $response = $client->post(env('API_URL') . 'equipment', [
                     'headers' => [
                         "Authorization" => "Bearer " . $request->session()->get('token')
@@ -735,11 +754,12 @@ class LocationController extends Controller
                     'json' => $body
                 ]);
                 $equipment = json_decode($response->getBody()->getContents());
-                $equipmentUuid = $equipment->data->uuid;
+                //dd($equipment);
+                $equipmentUuid = $equipment->uuid;
 
-                File::ensureDirectoryExists('public/equipments/' . $equipmentUuid);
-                $imgPathEquipment[$j+1]->storeAs('public/equipments/' . $equipmentUuid, $imgPathEquipment[$j+1]->getClientOriginalName(), 'equipments');
-
+                //$imgPathEquipment[$j+1]->storeAs('equipments/' . $equipmentUuid, $imgPathEquipment[$j+1]->getClientOriginalName(), 'equipments');
+                Storage::disk('wasabi')->makeDirectory('equipments/' . $equipmentUuid . '/');
+                Storage::disk('wasabi')->put('equipments/' . $equipmentUuid . '/'.$imgPathEquipment[$j+1]->getClientOriginalName(), $imgPathEquipment[$j+1]->getClientOriginalName());
             }
 
             return redirect('/travel/creationLocation', 302, [], false)->with('success', 'Housing created');
@@ -751,7 +771,7 @@ class LocationController extends Controller
             return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing'])->WithInput(
                 $request->all()
             );
-        }
+        }*/
     }
     private function undoLocation(Request $request, $accountUUid , $deleteBug = true)
     {
@@ -762,24 +782,27 @@ class LocationController extends Controller
 
         try{
             $client = new Client();
-            $response = $client->get(env('API_URL') . 'housing?account=' . $accountUUid, [
-                'headers' => [
-                    "Authorization" => "Bearer " . $request->session()->get('token')
-                ]
-            ]);
-            $housing = json_decode($response->getBody()->getContents());
-            $housing = $housing->data[0];
+                $response = $client->get(env('API_URL') . 'housing?account=' . $accountUUid, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+                $housing = json_decode($response->getBody()->getContents());
+                $housing = $housing->data[0];
 
         }catch (\Exception $e){
             error_log($e->getMessage());
         }
 
         try{
-            $response = $client->delete(env('API_URL') . 'bed_room?uuid=' . $housing->uuid, [
+        $housing = json_decode($housing);
+            $response = $client->delete(env('API_URL') . 'bed_room?=' . $housing->uuid, [
                 'headers' => [
                     "Authorization" => "Bearer " . $request->session()->get('token')
                 ]
             ]);
+            Storage::disk('wasabi')->deleteDirectory('locations/' . $housing->uuid);
+
         }catch (\Exception $e){
             error_log($e->getMessage());
         }
@@ -804,6 +827,7 @@ class LocationController extends Controller
                     ]
                 ]);
             }
+            Storage::disk('wasabi')->deleteDirectory('equipments/' . $housing->uuid);
 
             $response = $client->delete(env('API_URL') . 'housing?uuid=' . $housing->uuid, [
                 'headers' => [
@@ -811,19 +835,18 @@ class LocationController extends Controller
                 ]
             ]);
 
+            Storage::disk('wasabi')->deleteDirectory('bedrooms/' . $housing->uuid);
+
             if ($deleteBug){
                 return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing'])->WithInput(
                     $request->all()
                 );
             }
-            else{
-                return;
-            }
+            return;
 
         }catch (\Exception $e){
             error_log($e->getMessage());
         }
-
         return;
     }
 
@@ -832,9 +855,64 @@ class LocationController extends Controller
         if (!$this->isAdmin($request->session()->get('token'))){
             return redirect('/travel/'.$id, 302, [], false);
         }
-        $this->undoLocation($request, $id, false);
+        $client = new Client();
 
-        return redirect('/travel', 302, [], false);
+        try {
+            //get all bedrooms from the location
+            $response = $client->get(env('API_URL') . 'bed_room?housing=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $bedRooms = json_decode($response->getBody()->getContents());
+            $bedRooms = $bedRooms->data;
+            for ($i = 0; $i < count($bedRooms); $i++) {
+                $response = $client->delete(env('API_URL') . 'bed_room?uuid=' . $bedRooms[$i]->uuid, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+                Storage::disk('wasabi')->deleteDirectory('bedrooms/' . $bedRooms[$i]->uuid);
+            }
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+        try {
+            //get all equipment from the location
+            $response = $client->get(env('API_URL') . 'equipment?housing=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $equipments = json_decode($response->getBody()->getContents());
+            $equipments = $equipments->data;
+            for ($i = 0; $i < count($equipments); $i++) {
+                $response = $client->delete(env('API_URL') . 'equipment?uuid=' . $equipments[$i]->uuid, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+                Storage::disk('wasabi')->deleteDirectory('equipments/' . $equipments[$i]->uuid);
+            }
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+        try{
+            $response = $client->delete(env('API_URL') . 'housing?uuid=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            Storage::disk('wasabi')->deleteDirectory('locations/' . $id);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+        return redirect('/travel', 302, [], false)->with('success', 'Location removed');
     }
     private function isAdmin($token)
     {
@@ -886,4 +964,6 @@ class LocationController extends Controller
 
         return redirect('/travel/'.$id, 302, [], false);
     }
+
+
 }
