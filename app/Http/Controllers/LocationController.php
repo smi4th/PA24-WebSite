@@ -612,8 +612,9 @@ class LocationController extends Controller
         ]);
     }
 
-    public function doCreateLocation(Request $request)
+    public function doCreateLocation(PostLocationRequest $request)
     {
+        /*
         $data = $request->all();
 
         $image = $request->file('imgPathEquipment')[1];
@@ -631,7 +632,7 @@ class LocationController extends Controller
         die();
         //return redirect('/travel/creationLocation', 302, [], false)->with('success', 'Location created');
 
-        /*
+        */
         $data = $request->validated();
         $client = new Client();
         //dd($data);
@@ -771,7 +772,7 @@ class LocationController extends Controller
             return redirect('/travel/creationLocation', 302, [], false)->withErrors(['error' => 'An error occurred when create housing'])->WithInput(
                 $request->all()
             );
-        }*/
+        }
     }
     private function undoLocation(Request $request, $accountUUid , $deleteBug = true)
     {
