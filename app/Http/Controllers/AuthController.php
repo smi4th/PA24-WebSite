@@ -94,7 +94,7 @@ class AuthController extends Controller
             //dd($responseBody);
             if ($response->getStatusCode() !== 200) {
                 return view('auth.login')->withErrors([
-                    "error" => "Error when load register page "  . $e->getMessage() . " " . env("API_URL")
+                    "error" => "Error when load register page "
                 ]);
             }
             $data = $responseBody['data'];
@@ -102,7 +102,7 @@ class AuthController extends Controller
 
         }catch (GuzzleException $e) {
             return view('auth.login')->withErrors([
-                "error" => "Error when load register page "  . $e->getMessage() . " " . env("API_URL")
+                "error" => "Error when load register page "
             ]);
         }
     }
