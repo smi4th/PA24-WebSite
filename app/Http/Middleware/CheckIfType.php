@@ -1,35 +1,20 @@
 <?php
 
-namespace App\View\Components;
+namespace App\Http\Middleware;
 
 use Closure;
-use http\Env\Request;
-use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class Header extends Component
+class CheckIfType
 {
     /**
-     * Create a new component instance.
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function __construct(public $connected = false, public $light = false, public $profile = false)
-    {
-        /**
-         * $connected : savoir si on affiche le header connecté ou non avec photo de profil
-         * $light : savoir si on affiche le header en mode light ou dark
-         * $profile : si c'est le header de la page profil
-         */
-        //dd($connected,$light,$profile);
-        $this->connected = $connected == null ? false : $connected;
-        $this->light = $light == null ? false : $light;
-        $this->profile = $profile == null ? false : $profile;
-    }
-
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+    public function handle(Request $request, Closure $next, $role ): Response
     {
 
         try {
@@ -68,7 +53,12 @@ class Header extends Component
             $accountType = "";
         }
 
-        $values =  ['connected' => $this->connected, 'light' => $this->light, 'profile' => $this->profile, 'dataUser' => $dataUser, 'accountType' => $accountType];
-        return view('components.header',$values);
+        if ($accountType != $role){
+            return redirect('/error', 302, [], false)->withErrors([
+                "error" => "Vous n'avez pas les droits pour accéder à cette page"
+            ]);
+        }
+
+        return $next($request);
     }
 }

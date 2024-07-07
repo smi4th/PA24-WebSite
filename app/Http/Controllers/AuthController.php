@@ -153,6 +153,7 @@ class AuthController extends Controller
                 'first_name' => $dataInput['firstname'],
                 'last_name' => $dataInput['lastname'],
                 'account_type' => $dataInput['account_type'],
+                'imgPath' => 'NULL'
             ];
 
             $response = $client->post( env("API_URL") . 'account', [

@@ -68,7 +68,7 @@ return [
             'region' => env('WAS_DEFAULT_REGION'),
             'bucket' => env('WAS_BUCKET'),
             'endpoint' => 'https://s3.'.env('WAS_DEFAULT_REGION') . '.wasabisys.com',//' . env('WAS_BUCKET').'/', //env('WAS_URL'),
-            'url' =>'https://storagePcs0.b-cdn.net/',// 'https://s3.'.env('WAS_DEFAULT_REGION') . '.wasabisys.com/'.env('WAS_BUCKET').'/' ,//'', //'WAS_BUCKET') . '/',
+            'url' =>'https://storagePcs.b-cdn.net/',// 'https://s3.'.env('WAS_DEFAULT_REGION') . '.wasabisys.com/'.env('WAS_BUCKET').'/' ,//'', //'WAS_BUCKET') . '/',
             'throw' => false,
         ],
 

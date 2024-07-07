@@ -1,0 +1,168 @@
+@import "../var.css";
+
+.container_layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.title{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 10%;
+
+    h1{
+        font-family: 'Maitree', sans-serif;
+        font-size: 2rem;
+        color : var(--primary-color);
+    }
+}
+
+.create{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 10%;
+
+    a{
+        text-decoration: none;
+        font-family: 'Manrope', sans-serif;
+        font-size: 1rem;
+        color : var(--white);
+        background-color: var(--primary-color);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}
+
+.all_services{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow: auto;
+
+
+    margin-top: 20px;
+
+    .card_layout{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        overflow: auto;
+
+        .card {
+            width: 20%;
+            height: 20%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+
+            .image{
+                width: 80%;
+                margin: auto;
+                height: 20%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-top-left-radius: 5px;
+                    border-top-right-radius: 5px;
+                }
+
+            }
+
+            .card_content{
+                width: 100%;
+                height: 70%;
+
+                form{
+
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    input{
+                        width: 100%;
+                        height: 50%;
+                        border: none;
+                        border-bottom: 1px solid var(--dark-blue-grey);
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        font-family: 'Manrope', sans-serif;
+                        font-size: 1rem;
+
+                    }
+
+                    select{
+                        width: 100%;
+                        height: 50%;
+                        border: none;
+                        border-bottom: 1px solid var(--dark-blue-grey);
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        font-family: 'Manrope', sans-serif;
+                        font-size: 1rem;
+                    }
+                    option{
+                        font-family: 'Manrope', sans-serif;
+                        font-size: 1rem;
+                    }
+
+                    input[type="submit"]{
+                        width: 80%;
+                        height: 50%;
+                        background-color: var(--primary-color);
+                        color: var(--white);
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-family: 'Manrope', sans-serif;
+                        font-size: 1rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.noPresta{
+    height: 10%;
+    width: 100%;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+
+    h1{
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.5rem;
+        color : var(--dark-blue-grey);
+    }
+
+}
+
+h3.info{
+    text-align: center;
+    font-family: 'Manrope', sans-serif;
+    font-size: 1rem;
+    color : var(--dark-blue-grey);
+}

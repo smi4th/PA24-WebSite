@@ -220,7 +220,8 @@ class BackOfficeController extends Controller
                 'file_path' => $this->view_path . "travelers",
                 'stack_css' => 'styles_travelers',
                 'accounts' => $accounts,
-                'numberPages' => $numberPages
+                'numberPages' => $numberPages,
+                'account_type' => $typeAccount
             ]);
         }catch (\Exception $e) {
             error_log($e->getMessage());
@@ -407,6 +408,28 @@ class BackOfficeController extends Controller
                 "error" => $e->getMessage()
             ]);
         }
+    }
+
+    public function setAccountType(Request $request, $account, $account_type)
+    {
+        try {
+            $this->client = new Client();
+            $response = $this->client->put(env('API_URL') . 'account?uuid=' . $account, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => [
+                    "account_type" => $account_type
+                ]
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/backoffice/users', 302, [], false)->withErrors([
+                "error" => $e->getMessage()
+            ]);
+        }
+
+        return redirect('/backoffice/users', 302, [], false)->with('success', 'Changement de compte effectué');
     }
 
 }

@@ -41,20 +41,26 @@ class StripePaymentController extends Controller
                     return $item;
                 }
             }
-            return redirect('/profile',302,[],false)->withErrors(['error' => 'Your basket is empty']);
+            return false;
 
         }catch (\Exception $e){
             error_log($e->getMessage());
-            return redirect('/profile',302,[],false)->withErrors(['error' => 'An error occured while fetching your basket']);
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur lors du chargement du panier']);
         }
-        return redirect('/profile',302,[],false)->withErrors(['error' => 'Your basket is empty']);
+        return redirect('/profile',302,[],false)->withErrors(['error' => 'Panier vide']);
     }
 
     public function checkout(Request $request)
     {
 
         $all_items = $this->getBasket($request);
+        if ($all_items == false){
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Panier vide']);
+        }
+
         $lines_items = [];
+
+        //dd($all_items);
 
         $housing = $all_items->HOUSING;
         $services = $all_items->SERVICES;
@@ -62,7 +68,7 @@ class StripePaymentController extends Controller
         $equipments = $all_items->EQUIPMENTS;
         //dd($all_items);
         if (empty($housing) && empty($services) && empty($bedrooms) && empty($equipments)){
-            return redirect('/profile',302,[],false)->withErrors(['error' => 'Your basket is empty']);
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Panier vide']);
         }
 
 
@@ -138,7 +144,7 @@ class StripePaymentController extends Controller
             ],
             'billing_address_collection'=> 'required',
             'mode' => 'payment',
-            'success_url' => "http://localhost:8000/basketPayment/success",
+            'success_url' => env('APP_URL')."/basketPayment/success",
             'cancel_url' => route('cancel'),
         ]);
 
@@ -296,7 +302,7 @@ class StripePaymentController extends Controller
     public function cancel()
     {
         error_log('cancel');
-        return redirect('/profile',302,[],false)->withErrors(['error' => 'Payment canceled']);
+        return redirect('/profile',302,[],false)->withErrors(['error' => 'Paiement annuler']);
     }
 
     public function successSubscription(Request $request)
@@ -319,7 +325,7 @@ class StripePaymentController extends Controller
             $account = json_decode($response->getBody()->getContents());
         }catch (\Exception $e){
             error_log($e->getMessage());
-            return redirect('/profile',302,[],false)->withErrors(['error' => 'An error occured while preparing receipt']);
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur pendant le paiement']);
         }
 
         $pdf = (new PdfGeneratorController())->generateReceipt($basket,$account);
@@ -337,10 +343,10 @@ class StripePaymentController extends Controller
 
         }catch (\Exception $e){
             error_log($e->getMessage());
-            return redirect('/profile',302,[],false)->withErrors(['error' => 'An error occured while updating basket']);
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur pendant la mise à jour du panier']);
         }
 
-        return redirect('/profile',302,[],false)->with('success', 'Payment success');
+        return redirect('/profile',302,[],false)->with('success', 'Paiement effectué');
 
     }
 }

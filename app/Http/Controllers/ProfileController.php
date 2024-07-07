@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\PutRequestPrestation;
 use App\Http\Requests\ReviewsRequest;
 use http\Exception\BadConversionException;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Storage;
 use Monolog\Handler\ErrorLogHandler;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,68 +17,59 @@ class ProfileController extends Controller
 {
     var string $view_path = "profile.";
 
-    function index()
+    function index(Request $request)
     {
-        #renvoie la vue du profil
+        $dataUser = $this->getInfoprofile($request);
+
         return view("default", [
             'file_path' => $this->view_path . "main_profile",
-            'stack_css' => 'main_profile.css',
+            'stack_css' => 'main_profile',
             'connected' => true,
             'profile' => true,
-            'light' => false
+            'light' => false,
+            'data' => $dataUser,
         ]);
     }
 
-    private function getInfoprofile()
+    private function getInfoprofile(Request $request)
     {
-        //renvoie les infos du compte
-        $client = new Client();
-        $token = session('token');
-        return $client->get(env("API_URL") . 'account?token=' . $token, [
-            'headers' => [
-                'authorization' => 'Bearer ' . $token,
-            ]
-        ]);
-    }
-    public function showProfile()
-    {
-        //renvoie la vue du profil avec les infos du compte
-        $responseBody = "";
-        try {
+        try{
             $client = new Client();
-            //recuperer username en session
-            $token = session('token');
-            $response = $this->getInfoprofile();
+            $token = $request->session()->get('token');
 
-            if ($response->getStatusCode() == 200) {
-                $responseBody = json_decode($response->getBody()->getContents(), true);
-            } else {
-                return redirect('/login', 302, [], true)->withErrors([
-                    "error" => "Error when get data: " . $response->getBody()->getContents()
-                ]);
-            }
-        } catch (\Exception $e) {
+            $response = $client->get(env("API_URL") . 'account?token=' . $token, [
+                'headers' => [
+                    "Authorization" => "Bearer ". $token
+
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody()->getContents());
+            return $responseBody;
+        }catch (\Exception $e){
             error_log($e->getMessage());
-            dd($e->getMessage());
+            return $e;
         }
-
-        // renvoyer les infos du compte
-        return view('profile.main_profile', ['data' => $responseBody]);
     }
     public function editProfile($inputName)
     {
         //renvoie la vue de modification du profil
-        if ($inputName == "password") {
-            $nom = "Mot de passe";
-        }
-        if ($inputName == "email") {
-            $nom = "Email";
-        }
-        if ($inputName == "username") {
-            $nom = "Nom d'utilisateur";
-        }
-        if ($inputName == "name") {
-            $nom = "Nom";
+        switch ($inputName) {
+            case "password":
+                $nom = "Mot de passe";
+                break;
+            case "email":
+                $nom = "Email";
+                break;
+            case "username":
+                $nom = "Nom d'utilisateur";
+                break;
+            case "name":
+                $nom = "Nom";
+                break;
+            default:
+                error_log("Input introuvable");
+                break;
         }
         return view('profile.edit_profile', ['inputName' => $inputName, 'nom' => $nom]);
     }
@@ -139,7 +132,7 @@ class ProfileController extends Controller
         }
 
         try {
-            $infosAcc = $this->getInfoprofile();
+            $infosAcc = $this->getInfoprofile($request);
             $uuid = json_decode($infosAcc->getBody()->getContents(), true)['data'][0]['uuid'];
             $response = $client->put(env("API_URL") . 'account?uuid=' . $uuid, [
                 'headers' => ['authorization' => 'Bearer ' . $token],
@@ -160,30 +153,49 @@ class ProfileController extends Controller
     }
     public function uploadProfileImage(Request $request)
     {
-        $request->validate([
-            'profile_image' => 'required|image|max:2048',
-        ]);
+        $messsages = [
+            'profile_image.required' => 'L\'image est obligatoire',
+            'profile_image.image' => 'Le fichier doit être une image',
+            'profile_image.mimes' => 'Le fichier doit être une image de type jpeg, png ou svg',
+            'profile_image.max' => 'Le fichier ne doit pas dépasser 2Mo',
+            'profile_image.extensions' => 'Le fichier doit être une image de type jpeg, png ou svg',
+            'profile_image.uploaded' => 'Erreur lors de l\'upload de l\'image'
+        ];
 
-        $fileName = time() . '.' . $request->profile_image->extension();
-        $request->profile_image->move(public_path('assets/images/pfp'), $fileName);
+        $request->validate([
+            'profile_image' => 'required|image|max:2048|extensions:jpeg,png,svg|mimes:jpeg,png,svg'
+        ], $messsages);
+
+        $data = $request->all();
+        $newImage = $data['profile_image'];
+
+        $dataUser = $this->getInfoprofile($request);
+
+        $accountUUID = $dataUser->data[0]->uuid;
 
         $client = new Client();
-        $token = session('token');
-        $infosAcc = $this->getInfoprofile();
-        $uuid = json_decode($infosAcc->getBody()->getContents(), true)['data'][0]['uuid'];
-        $body = ['imgPath' => $fileName];
-        $response = $client->put(env("API_URL") . 'account?uuid=' . $uuid, [
-            'headers' => ['authorization' => 'Bearer ' . $token],
-            'json' => $body
-        ]);
-        if ($response->getStatusCode() !== 200) {
+        try{
+            $response = $client->put(env("API_URL") . 'account?uuid=' . $accountUUID, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token'),
+                ],
+                'json' => [
+                    'imgPath' => $newImage->getClientOriginalName()
+                ]
+            ]);
+
+            Storage::disk('wasabi')->putFileAs('pfp/', $newImage, $newImage->getClientOriginalName());
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
             return redirect('/profile', 302, [], false)->withErrors([
-                "error" => "Error when update profile: " . $response->getBody()->getContents()
+                "error" => "Erreur lors du changement de l'image"
             ]);
         }
-        return redirect('/profile', 302, [], false)->with('success', 'Profile picture updated!');
-    }
 
+        return redirect('/profile', 302, [], false)->with('success', 'Image de profil modifiée!');
+
+    }
     public function showReviews(Request $request)
     {
         try{
@@ -324,5 +336,156 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', 'Review removed!');
+    }
+
+    public function showMyPrestations(Request $request)
+    {
+        $dataUser = $this->getInfoprofile($request);
+
+        $prestations = [];
+
+        $accountUUID = $dataUser->data[0]->uuid;
+
+        try {
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'services?account=' . $accountUUID, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+
+            $prestations = json_decode($response->getBody()->getContents());
+            $prestations = $prestations->data;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos prestations"
+            ]);
+        }
+
+        try{
+            $client = new Client();
+            $response = $client->get(env('API_URL') . 'services_types?all=true', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $servicesTypes = json_decode($response->getBody()->getContents());
+            $servicesTypes = $servicesTypes->data;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            $servicesTypes = [];
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "prestations",
+            'stack_css' => 'prestations_profile',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            'prestations' => $prestations,
+            'servicesTypes' => $servicesTypes
+        ]);
+    }
+
+    function updatePrestation(PutRequestPrestation $request , $id)
+    {
+
+        $data = $request->validated();
+
+        $description = $data['description'];
+        $price = $data['price'];
+        $duration = $data['duration'];
+        $image = $data['image'];
+        $category = $data['category'];
+
+        $body = [
+            'description' => $description,
+            'price' => $price,
+            'duration' => $duration,
+            'service_type' => $category,
+            'validated' => '0'
+        ];
+
+
+        if ($image != null){
+            $body['imgPath'] = $image->getClientOriginalName();
+        }
+
+        $client = new Client();
+        try{
+            $response = $client->put(env("API_URL") . 'services?uuid=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => $body
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile/prestations', 302, [], false)->withErrors([
+                "error" => "Erreur lors de la mise à jour de la prestation"
+            ]);
+        }
+
+        if ($image != null){
+            Storage::disk('wasabi')->putFileAs('services/'.$id, $image, $image->getClientOriginalName());
+        }
+
+        return redirect('/profile/prestations', 302, [], false)->with('success', 'Prestation modifiée!');
+    }
+
+    function showBills(Request $request)
+    {
+        //a faire quand j'aurais fini le reste
+    }
+    function showManagementPrestation(Request $request)
+    {
+        //La méthode elle affiche toutes les paniers payés qui ont une des prestations de l'utilisateur connecté
+        //et propose de faire un export de la fiche d'intervention
+        $dataUser = $this->getInfoprofile($request);
+
+        $accountUUID = $dataUser->data[0]->uuid;
+
+        try {
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'basket?paid=1', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+
+            $result = json_decode($response->getBody()->getContents());
+            $baskets = $result->baskets;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos prestations"
+            ]);
+        }
+
+        $allPrestations = [];
+
+        foreach ($baskets as $basket){
+
+            $allServices = $basket->SERVICES;
+
+            foreach ($allServices as $service){
+
+                if($service->account == $accountUUID){
+                    $allPrestations[] = $service;
+                }
+            }
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "management_prestation",
+            'stack_css' => 'management_prestation',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            'prestations' => $allPrestations
+        ]);
     }
 }

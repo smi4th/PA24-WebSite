@@ -615,10 +615,11 @@ class LocationController extends Controller
     public function doCreateLocation(PostLocationRequest $request)
     {
         /*
+        //dd($request->all());
         $data = $request->all();
 
         $image = $request->file('imgPathEquipment')[1];
-
+        //dd($image);
         // Créer le chemin de destination
         $path = 'equipments/id/' . $image->getClientOriginalName();
 
@@ -626,17 +627,18 @@ class LocationController extends Controller
         Storage::disk('wasabi')->put($path, file_get_contents($image->getRealPath()));
 
         // Rendre le fichier public
-        Storage::disk('wasabi')->setVisibility($path, 'public');
+        //Storage::disk('wasabi')->setVisibility($path, 'public');
 
-        echo "<img src='https://s3.eu-west-2.wasabisys.com/storage.pcs/" . $path . "' alt='image' />";
-        die();
+        // Récupérer l'URL de l'image depuis
+        $img = Storage::disk('wasabi')->url($path);
+
+        echo "<img src='$img' alt='img' style='width: 300px;height: 300px' >";
         //return redirect('/travel/creationLocation', 302, [], false)->with('success', 'Location created');
 
-        */
+        /*/
+        //dd($data);
         $data = $request->validated();
         $client = new Client();
-        //dd($data);
-
 
         try {
             //la création du housing
@@ -773,6 +775,7 @@ class LocationController extends Controller
                 $request->all()
             );
         }
+
     }
     private function undoLocation(Request $request, $accountUUid , $deleteBug = true)
     {

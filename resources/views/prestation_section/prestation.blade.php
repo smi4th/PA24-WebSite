@@ -5,24 +5,30 @@
     <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
 @endpush
 @section('content')
-    @error($errors->any())
+    @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
-                    <li> {{ $error }}</li>
+                    <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
-    @enderror
+    @endif
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
 
-    <div class="container">
-        <div class="title">
+    <div class="container_layout">
+        <div class="title text-center">
             <h1>Reservation</h1>
+        </div>
+        <div class="action">
+            <button onclick="window.location.href='/prestations/{{$type}}'" class="btn btn-info">Retour</button>
+            @if($admin)
+                <button onclick="window.location.href='/prestations/{{$type}}/{{$id}}/delete'" class="btn btn-danger">Supprimer</button>
+            @endif
         </div>
         <div class="calendar">
             <div id='calendar'></div>
@@ -63,6 +69,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'timeGridWeek',
                 initialDate: new Date().currentDate,
+                height: '85%',
                 locale: 'fr',
                 timeZone: 'UTC',
                 aspectRatio: 1,
@@ -81,11 +88,12 @@
                 businessHours: businessHours,
                 select: function(info) {
                     if (!isWithinBusinessHours(info.start, info.end)) {
-                        calendar.unselect();
-                        alert('Selectionner une date entre 8h et 20h')
+                        //calendar.unselect();
+                        alert('Selectionner une date entre 8h et 20h, le prestataire peut ne pas être disponible');
                     }else{
                         date = info.startStr;
                         document.getElementById('start_date').value = date;
+                        alert('Date selectionnée: ' + date)
                     }
                 },
                 events: [

@@ -1,0 +1,17 @@
+@import "../var.css";
+
+.container_layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.list_receipts{
+    width: 100%;
+    height: 100%;
+    padding: 1%;
+    overflow: auto;
+
+}

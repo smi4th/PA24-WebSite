@@ -28,6 +28,7 @@ img{
         border-radius: 15px;
         border-collapse: separate;
         .card{
+            border: none;
             height: 100%;
             width: 100%;
             display: flex;

@@ -39,7 +39,11 @@
                     <button class="btn btn-primary btn-sm" onclick="editUser('{{ $user->uuid }}')">Edit</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteUser('{{ $user->uuid }}')">Delete</button>
                     @if ($user->account_type != "Administateur")
-                        <button class="btn btn-success btn-sm" onclick="promoteUser('{{ $user->uuid }}')">Promote</button>
+                        <select class="form-select" aria-label="" onchange="changeRole('{{ $user->uuid }}', this)">
+                            <option selected disabled value="">Selectionner un rôle</option>
+                            @foreach($account_type as $role)
+                                <option value="{{$role->uuid}}">{{$role->type}}</option>
+                            @endforeach
                     @endif
                 </td>
             </tr>
@@ -82,8 +86,10 @@
             window.location.href = '/backoffice/users/' + id + '/delete';
         }
 
-        function promoteUser(id) {
-            //window.location.href = '/backoffice/users/' + id + '/promote';
+        function changeRole(id, select) {
+            let role = select.value;
+            console.log(role,id);
+            window.location.href = '/backoffice/users/' + id + '/changeAccount/' + role;
         }
     </script>
     @endif

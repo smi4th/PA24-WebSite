@@ -13,6 +13,8 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Middleware\CheckIfType;
 
 Route::get('/', function () {
     return view('landing');
@@ -45,6 +47,7 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class,CheckIfStaff::class)
 
     Route::get('/users/{id}/edit/{information}', 'updateUser');
     Route::get('/users/{id}/delete', 'deleteUser');
+    Route::get('/users/{id}/changeAccount/{role}', 'setAccountType');
 
     Route::get('/prestations-companies', 'prestationsCompanies');
     Route::get('/providers', 'providers');
@@ -70,9 +73,17 @@ Route::prefix('/travel')->controller(LocationController::class)->middleware(Chec
 
 Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(PrestationController::class)->group(function () {
     Route::get('/', 'index');
+    Route::get('/createPrestation','createPrestation');
+    Route::post('/createPrestation','doCreatePrestation')->name('createPrestation');
+    Route::post('/createService','doCreateService')->name('createService');
+
     Route::get('/{type}', 'showSubPrestation');
     Route::get('/{type}/{id}', 'showPrestation');
     Route::post('/{type}/{id}/reservation', 'doReservationPrestation');
+
+    Route::get('/{type}/{id}/delete', 'removePrestation')->middleware(CheckIfStaff::class);
+    Route::get('/{type}/{id}/approuve', 'approuvePrestation')->middleware(CheckIfStaff::class);
+
     Route::get('/{any}','index')->where('any', '.*');
 });
 
@@ -92,11 +103,28 @@ Route::prefix('/demandSupport')->middleware(CheckIfAuth::class)->controller(Tick
 });
 
 Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
-    Route::get('/', 'showProfile')->name('profile');
+    Route::get('/', 'index')->name('profile');
     route::post('/', 'updateProfile')->name('update_profile');
     Route::get('/edit-profile/{inputName}', 'editProfile')->name('edit_profile');
+
     Route::post('/profile/upload', 'uploadProfileImage')->name('profile.upload');
     Route::get('/ticket/{id}', 'showTicket');
+
+    Route::get('/bills', 'showBills');
+
+    Route::get('/locations', 'showLocations')->middleware([CheckIfType::class.":Traveler"]);
+
+    Route::prefix('/prestations')->middleware([CheckIfType::class.":Handyman"])->group(function () {
+
+        Route::get('/', 'showMyPrestations');
+        Route::get('/management', 'showManagementPrestation');
+        Route::post('/{id}/update', 'updatePrestation')->name('updatePrestation');
+        Route::get('/{any}','showMyPrestations')->where('any', '.*');
+
+
+    });
+
+
     Route::get('/{any}','index')->where('any', '.*');
 
 });
