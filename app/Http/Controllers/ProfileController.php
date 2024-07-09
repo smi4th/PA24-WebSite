@@ -437,19 +437,52 @@ class ProfileController extends Controller
 
     function showBills(Request $request)
     {
-        //a faire quand j'aurais fini le reste
+        $infoProfile = $this->getInfoprofile($request);
+        $accountUUID = $infoProfile->data[0]->uuid;
+
+        try{
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'basket?account=' . $accountUUID, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+            $baskets = json_decode($response->getBody()->getContents());
+            $baskets = $baskets->baskets;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos factures"
+            ]);
+        }
+
+        $allBills = [];
+        foreach ($baskets as $basket){
+            if($basket->paid == 1){
+                $allBills[] = $basket->uuid;
+            }
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "bills",
+            'stack_css' => 'bills_profile',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            'bills' => $allBills
+        ]);
     }
+
     function showManagementPrestation(Request $request)
     {
-        //La méthode elle affiche toutes les paniers payés qui ont une des prestations de l'utilisateur connecté
-        //et propose de faire un export de la fiche d'intervention
         $dataUser = $this->getInfoprofile($request);
 
         $accountUUID = $dataUser->data[0]->uuid;
 
         try {
             $client = new Client();
-            $response = $client->get(env("API_URL") . 'basket?paid=1', [
+            $response = $client->get(env("API_URL") . 'basket?all=true', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $request->session()->get('token')
                 ]
@@ -466,26 +499,151 @@ class ProfileController extends Controller
         }
 
         $allPrestations = [];
+        $infoCustomer = [];
 
         foreach ($baskets as $basket){
 
+            $currentAccount = $basket->account;
+            $status = $basket->paid;
             $allServices = $basket->SERVICES;
 
             foreach ($allServices as $service){
 
                 if($service->account == $accountUUID){
                     $allPrestations[] = $service;
+                    $service->customer = $currentAccount;
+                    $service->status = $status;
+                    $service->basket = $basket->uuid;
                 }
             }
         }
 
+        try{
+            foreach ($allPrestations as $prestation) {
+                $response = $client->get(env("API_URL") . 'account?uuid=' . $prestation->customer, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+                $data = json_decode($response->getBody()->getContents());
+
+                $infoCustomer[$prestation->customer] = $data->data[0]->username;
+
+            }
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos commandes"
+            ]);
+        }
+
+
         return view("default", [
             'file_path' => $this->view_path . "management_prestation",
-            'stack_css' => 'management_prestation',
+            'stack_css' => 'management_profile',
             'connected' => true,
             'profile' => true,
             'light' => false,
-            'prestations' => $allPrestations
+            'prestations' => $allPrestations,
+            'customers' => $infoCustomer
         ]);
+    }
+
+    function generateInterventionForm(Request $request)
+    {
+        $messages = [
+            'customer.required' => 'Le client est obligatoire',
+            'startTime.required' => 'L\'heure de début est obligatoire',
+            'duration.required' => 'La durée est obligatoire',
+            'duration.regex' => 'La durée doit être au format HH:MM:SS',
+            'price.required' => 'Le prix est obligatoire',
+            'price.numeric' => 'Le prix doit être un nombre',
+            'prestation.required' => 'La prestation est obligatoire',
+            'comment.required' => 'Le commentaire est obligatoire',
+            'basket.required' => 'Le panier est obligatoire'
+        ];
+
+        $data = $request->validate([
+            'customer' => 'required|string',
+            'startTime' => 'required|date',
+            'duration' => 'required|regex:/^([0-9]{2}):([0-9]{2}):([0-9]{2})$/',
+            'price' => 'required|numeric',
+            'prestation' => 'required|uuid',
+            'comment' => 'required|string|max:255',
+            'basket' => 'required|uuid'
+        ], $messages);
+
+        $pdf = (new PdfGeneratorController())->generateInterventionForm($data,$request);
+
+        if(!$pdf){
+            return redirect('/profile/prestations/management', 302, [], false)->withErrors([
+                "error" => "Erreur lors de la génération du formulaire"
+            ]);
+        }
+
+        return redirect('/profile/prestations/management', 302, [], false)->with('success', "Fiche d'intervention créée");
+    }
+
+    function showReviewsPrestation(Request $request)
+    {
+        $infoProfile = $this->getInfoprofile($request);
+
+        $accountUUID = $infoProfile->data[0]->uuid;
+
+        $prestationsUUID = [];
+
+        try {
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'services?account=' . $accountUUID, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $prestations = json_decode($response->getBody()->getContents());
+            $prestations = $prestations->data;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos avis"
+            ]);
+        }
+
+        foreach ($prestations as $prestation){
+            $prestationsUUID[] = $prestation->uuid;
+        }
+
+        $allReviews = [];
+
+        try{
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'review?all=true', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $reviews = json_decode($response->getBody()->getContents());
+            $reviews = $reviews->data;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos avis"
+            ]);
+        }
+
+        foreach ($reviews as $review){
+            if(in_array($review->services, $prestationsUUID)){
+                $allReviews[] = $review;
+            }
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "reviews_prestations",
+            'stack_css' => 'reviews_prestations',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            'reviews' => $allReviews
+        ]);
+
     }
 }

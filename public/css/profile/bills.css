@@ -7,3 +7,44 @@
     justify-content: center;
     margin-top: 50px;
 }
+
+
+.title_bills{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    h1{
+        color: var(--primary-color);
+        font-size: 2rem;
+        font-weight: lighter;
+        font-family: "Maitree", sans-serif;
+    }
+}
+
+.content_bills{
+    width: 100%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .bill{
+        width: 30%;
+        height: 30%;
+        a{
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+    }
+
+    h3{
+        color: var(--dark-blue-grey);
+        font-size: 1.5rem;
+        font-weight: lighter;
+        font-family: "Abel", sans-serif;
+    }
+}

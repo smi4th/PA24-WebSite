@@ -113,17 +113,27 @@ Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileCon
     Route::get('/bills', 'showBills');
 
     Route::get('/locations', 'showLocations')->middleware([CheckIfType::class.":Traveler"]);
+    Route::get('/locations/reviews', 'showLocation')->middleware([CheckIfType::class.":Traveler"]);
 
     Route::prefix('/prestations')->middleware([CheckIfType::class.":Handyman"])->group(function () {
 
         Route::get('/', 'showMyPrestations');
         Route::get('/management', 'showManagementPrestation');
+
+        Route::post('/management', 'generateInterventionForm')->name('generateInterventionForm');
+        Route::post('/management/{id}/delete', 'removePrestation');
+
+        Route::get('/reviews', 'showReviewsPrestation');
         Route::post('/{id}/update', 'updatePrestation')->name('updatePrestation');
         Route::get('/{any}','showMyPrestations')->where('any', '.*');
 
-
     });
 
+    Route::prefix('/reviews')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
+        Route::get('/', 'showReviews');
+        Route::post('/addReview', 'addReviews');
+        Route::get('/{id}/delete', 'removeReviews')->middleware(CheckIfStaff::class);
+    });
 
     Route::get('/{any}','index')->where('any', '.*');
 
@@ -134,11 +144,6 @@ Route::prefix('/tickets')->middleware(CheckIfAuth::class)->controller(TicketCont
     Route::post('/addTicket', 'addTickets');
 });
 
-Route::prefix('/reviews')->middleware(CheckIfAuth::class)->controller(ProfileController::class)->group(function () {
-    Route::get('/', 'showReviews');
-    Route::post('/addReview', 'addReviews');
-    Route::get('/{id}/delete', 'removeReviews')->middleware(CheckIfStaff::class);
-});
 
 Route::prefix('/planning')->middleware(CheckIfAuth::class)->controller(PlanningController::class)->group(function () {
     Route::get('/', 'showPlanning')->name('planning');

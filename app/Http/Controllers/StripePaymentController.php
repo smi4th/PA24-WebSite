@@ -60,6 +60,7 @@ class StripePaymentController extends Controller
 
         $lines_items = [];
 
+        $total = 0;
         //dd($all_items);
 
         $housing = $all_items->HOUSING;
@@ -83,6 +84,7 @@ class StripePaymentController extends Controller
                 ],
                 'quantity' => 1,
             ];
+            $total += $house->price;
         }
 
         foreach ($bedrooms as $bedroom) {
@@ -106,6 +108,7 @@ class StripePaymentController extends Controller
                 ],
                 'quantity' => 1,
             ];
+            $total += $bedroom->price;
         }
 
 
@@ -120,6 +123,7 @@ class StripePaymentController extends Controller
                 ],
                 'quantity' => 1,
             ];
+            $total += $service->price;
         }
 
         foreach ($equipments as $equipment) {
@@ -133,7 +137,44 @@ class StripePaymentController extends Controller
                 ],
                 'quantity' => $equipment->numberTotal,
             ];
+            $total += $equipment->price;
         }
+
+        $taxesTVA = 0;
+        try{
+            $client = new Client();
+            $response = $client->get(env('API_URL') . 'taxes?all=true', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $taxes = json_decode($response->getBody()->getContents());
+            $taxes = $taxes->data;
+
+            foreach ($taxes as $tax) {
+                if ($tax->name == "TVA"){
+                    $taxesTVA = $tax->value;
+                    break;
+                }
+            }
+
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur lors du chargement des taxes']);
+        }
+
+        $lines_items[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'product_data' => [
+                    'name' => 'TVA',
+                ],
+                'unit_amount' => (int)($total * $taxesTVA/100)*100,
+            ],
+            'quantity' => 1,
+        ];
+
         Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
         Stripe::setApiVersion('2024-04-10');
 
@@ -144,7 +185,7 @@ class StripePaymentController extends Controller
             ],
             'billing_address_collection'=> 'required',
             'mode' => 'payment',
-            'success_url' => env('APP_URL')."/basketPayment/success",
+            'success_url' => "http://localhost:8000/basketPayment/success",//env('APP_URL')."/basketPayment/success",
             'cancel_url' => route('cancel'),
         ]);
 
@@ -328,7 +369,7 @@ class StripePaymentController extends Controller
             return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur pendant le paiement']);
         }
 
-        $pdf = (new PdfGeneratorController())->generateReceipt($basket,$account);
+        $pdf = (new PdfGeneratorController())->generateReceipt($basket,$account,$request);
 
         try{
             $client = new Client();

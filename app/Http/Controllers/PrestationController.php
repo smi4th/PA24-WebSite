@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use DateTime;
 
 class PrestationController extends Controller
 {
@@ -212,12 +213,16 @@ class PrestationController extends Controller
         }
 
         try{
+            $date_start = date('Y-m-d H:i:s', strtotime($date_start));
+
             $body = [
                 'basket' => $currentBasketUUID,
                 'services' => $id,
                 'start_time' => $date_start
             ];
-            dd($body);
+
+
+            //dd($body);
             $client = new Client();
             $response = $client->post(env('API_URL') . 'basket/services', [
                 'headers' => [
@@ -227,11 +232,70 @@ class PrestationController extends Controller
             ]);
 
         }catch (\Exception $e){
+
+            $this->deleteCurrentAction($request, $currentBasketUUID, $id);
             error_log($e->getMessage());
             return redirect('prestations/'.$type.'/'.$id, 302, [], false)->withErrors(['error' => 'Erreur lors de la réservation']);
         }
+
+        try{
+            $response = $client->get(env('API_URL') . 'services?uuid=' . $id, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $service = json_decode($response->getBody()->getContents());
+            $service = $service->data;
+            $serviceAuthor = $service[0]->account;
+
+            $duration = $service[0]->duration;
+
+            $dateTime = new DateTime($date_start);
+            list($hours, $minutes, $seconds) = explode(':', $duration);
+            $dateTime->add(new \DateInterval('PT' . $hours . 'H' . $minutes . 'M' . $seconds . 'S'));
+
+            $end_time = $dateTime->format('Y-m-d H:i:s');
+
+            $body = [
+                'account' => $serviceAuthor,
+                'start_date' => $date_start,
+                'end_date' => $end_time
+            ];
+
+            $response = $client->post(env('API_URL') . 'disponibility', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => $body
+            ]);
+
+        }catch (\Exception $e){
+
+            $this->deleteCurrentAction($request, $currentBasketUUID, $id);
+
+            error_log($e->getMessage());
+            return redirect('prestations/'.$type.'/'.$id, 302, [], false)->withErrors(['error' => 'Erreur lors de la réservation']);
+        }
+
         return redirect('prestations/'.$type.'/'.$id, 302, [], false)->with('success', 'Réservation éffectué avec succès');
     }
+
+    private function deleteCurrentAction(Request $request, $basketUUID, $serviceUUID)
+    {
+        error_log("patate");
+        $client = new Client();
+        try{
+            $response = $client->delete(env('API_URL') . 'basket/services?basket=' . $basketUUID . '&services=' . $serviceUUID, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+
+    }
+
 
     function createPrestation(Request $request)
     {
@@ -362,7 +426,8 @@ class PrestationController extends Controller
             'duration' => $duration,
             'imgPath' => $imgPath->getClientOriginalName(),
             'service_type' => $service_id,
-            'account' => $accountUuid
+            'account' => $accountUuid,
+            'taxes' => "1"
         ];
 
         //dd($body);

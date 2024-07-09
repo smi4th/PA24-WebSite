@@ -43,7 +43,7 @@
                                     <img src="{{ asset($housing->imgPath)}}" alt="image">
                                 @endif
                             </div>
-                            <form method="POST" action="/profile/addReview">
+                            <form method="POST" action="/profile/reviews/addReview">
                                 @csrf
                                 <input type="hidden" name="housing" value="{{$housing->uuid}}">
                                 <input type="text" name="comment" placeholder="Votre avis" value = {{old('comment')}} >
@@ -80,7 +80,7 @@
                                     <img src="{{ asset($bedRooms->imgPath)}}" alt="image">
                                 @endif
                             </div>
-                            <form method="POST" action="/profile/addReview">
+                            <form method="POST" action="/profile/reviews/addReview">
                                 @csrf
                                 <input type="hidden" name="bedroom" value="{{$bedRooms->uuid}}">
                                 <input type="text" name="comment" placeholder="Votre avis" value = {{old('comment')}} >
@@ -120,7 +120,7 @@
                                     <img src="{{ asset($services->imgPath)}}" alt="image">
                                 @endif
                             </div>
-                            <form method="POST" action="/profile/addReview">
+                            <form method="POST" action="/profile/reviews/addReview">
                                 @csrf
                                 <input type="hidden" name="service" value="{{$services->uuid}}">
                                 <input type="text" name="comment" placeholder="Votre avis" value = {{old('comment')}} >

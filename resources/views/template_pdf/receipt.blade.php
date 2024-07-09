@@ -14,7 +14,7 @@
             <div class="card">
                 <div class="card-header">Facture</div>
                 <div class="card-body">
-                    <h3>Informations du client</h3>
+                    <h3 class="text-align">Informations du client</h3>
                     <p>Nom: {{$account->first_name}} {{$account->last_name}}</p>
                     <h3>Hébergement</h3>
                     @foreach($housing as $h)
@@ -46,6 +46,7 @@
                         <p>Prix: {{ $service->price }}</p>
                     @endforeach
                     <h3>Total: {{ $total }}</h3>
+                    <h3>Payé TTC: {{ $totaltaxes }}</h3>
                 </div>
             </div>
         </div>

@@ -19,29 +19,30 @@
 
                 $menuItems = $profile ? [
                     ['link' => '/profile', 'text' => 'Profil'],
-                    ['link' => '/profile/prestations/management', 'text' => 'Gestion'],
                     ['link' => '/message', 'text' => 'Messages'],
-                    ['link' => '/bills', 'text' => 'Factures'],
+                    ['link' => '/profile/bills', 'text' => 'Factures'],
                     ['link' => '/basketPayment', 'text' => 'Panier'],
                     ['link' => '/planning', 'text' => 'Planning'],
-                    ['link' => '#', 'text' => 'Avis'],
                 ] : [
                     ['link' => '/profile', 'text' => 'Profil'],
-                    ['link' => '#', 'text' => 'Voyager'],
-                    ['link' => '#', 'text' => 'Prestation'],
-                    ['link' => '#', 'text' => 'Louer'],
-                    ['link' => '#', 'text' => 'Avis'],
+                    ['link' => '/travel', 'text' => 'Voyager'],
+                    ['link' => '/prestations', 'text' => 'Prestation'],
                 ];
 
                 if($profile){
                     switch ($accountType){
                         case 'Handyman':
                             $menuItems[] = ['link' => '/profile/prestations', 'text' => 'Prestations'];
+                            $menuItems[] = ['link' => '/profile/prestations/management', 'text' => 'Mes commandes'];
+                            $menuItems[] = ['link' => '/profile/prestations/reviews', 'text' => 'Avis'];
+
                             break;
                         case 'Loueur':
                             $menuItems[] = ['link' => '/profile/locations', 'text' => 'Locations'];
+                            $menuItems[] = ['link' => '/profile/locations/reviews', 'text' => 'Avis'];
                             break;
                         default:
+                            $menuItems[] = ['link' => '/profile/reviews', 'text' => 'Avis'];
                             break;
                     }
                 }
