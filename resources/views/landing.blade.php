@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <link rel="icon" href="{{ asset('assets/images/logo/white-line-orange-bg-blue.png') }}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 <main>
@@ -158,6 +160,61 @@
         </div>
     </section>
 </main>
+<div class="chatbot-button">
+        <button type="button" class="btn btn-primary" id="open-chatbot">
+            <i class="bi bi-chat-dots"></i>
+        </button>
+    </div>
+    <div class="chatbot-interface d-none">
+        <div class="card">
+            <div class="card-header">
+                Chatbot
+                <button type="button" class="btn-close" aria-label="Close" id="close-chatbot"></button>
+            </div>
+            <div class="card-body">
+                <div class="chat-container">
+                    <div class="chat-message"><b>Bot:</b> Bonjour, comment puis-je vous aider ?</div>
+                </div>
+                <textarea class="form-control" placeholder"Entrez votre question..." id="chat-input"></textarea>
+                <button type="button" class="btn btn-primary mt-2" id="send-message">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('open-chatbot').addEventListener('click', function() {
+            document.querySelector('.chatbot-interface').classList.remove('d-none');
+        });
+
+        document.getElementById('close-chatbot').addEventListener('click', function() {
+            document.querySelector('.chatbot-interface').classList.add('d-none');
+        });
+
+        document.getElementById('send-message').addEventListener('click', function() {
+        var message = document.getElementById('chat-input').value;
+        var chatContainer = document.querySelector('.chat-container');
+        var newMessage = `<div class="chat-message"><b>Vous:</b> ${message}</div>`;
+        chatContainer.innerHTML += newMessage;
+        document.getElementById('chat-input').value = '';
+
+        fetch(`/chatbot?keyword=${message}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Réponse du chatbot:', data);
+            let message = data.messages[0].text;
+            var botMessage = `<div class="chat-message"><b>Bot:</b> ${message}</div>`;
+            chatContainer.innerHTML += botMessage;
+        })
+        .catch((error) => {
+            console.error('Erreur:', error);
+        });
+    });
+    </script>
 <x-footer/>
 </body>
 
