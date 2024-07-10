@@ -14,6 +14,57 @@ class StripePaymentController extends Controller
         return view('profile.main_profile');
     }
 
+    function deleteBasket(Request $request)
+    {
+        $client = new Client();
+        try {
+            $response = $client->get(env('API_URL') . 'account?token=' . $request->session()->get('token'), [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+
+            $account = json_decode($response->getBody()->getContents());
+            $accountUUID = $account->data[0]->uuid;
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur lors de la suppression du panier']);
+        }
+
+        try {
+            $response = $client->get(env('API_URL') . 'basket?account=' . $accountUUID, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+
+            $baskets = json_decode($response->getBody()->getContents());
+            $baskets = $baskets->baskets;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur lors de la suppression du panier']);
+        }
+
+        try {
+            foreach ($baskets as $basket) {
+                if ($basket->paid == 0) {
+                    $response = $client->delete(env('API_URL') . 'basket?uuid=' . $basket->uuid, [
+                        'headers' => [
+                            "Authorization" => "Bearer " . $request->session()->get('token')
+                        ]
+                    ]);
+                }
+            }
+
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile',302,[],false)->withErrors(['error' => 'Erreur lors de la suppression du panier']);
+        }
+
+        return redirect('/profile',302,[],false)->with('success', 'Panier supprimé');
+
+    }
     private function getBasket(Request $request)
     {
         $client = new Client();

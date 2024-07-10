@@ -23,6 +23,8 @@
                     ['link' => '/profile/bills', 'text' => 'Factures'],
                     ['link' => '/basketPayment', 'text' => 'Panier'],
                     ['link' => '/planning', 'text' => 'Planning'],
+                    ['link' => '/profile/tickets/myTickets', 'text' => 'Mes tickets']
+
                 ] : [
                     ['link' => '/profile', 'text' => 'Profil'],
                     ['link' => '/travel', 'text' => 'Voyager'],
@@ -43,8 +45,10 @@
                             break;
                         default:
                             $menuItems[] = ['link' => '/profile/reviews', 'text' => 'Avis'];
+                            $menuItems[] = ['link' => '/basketPayment/subscription', 'text' => 'Abonnement'];
                             break;
                     }
+
                 }
 
             @endphp

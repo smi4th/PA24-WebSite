@@ -71,15 +71,9 @@
                         </form>
                     </div>
                     <div class="receipt_footer">
-                        <form method="POST" action="">
-                            @csrf
-                            <input type="hidden" name="prestation" value="{{$prestation->uuid}}">
-                            <input type="submit" value="Ouvrir la discussion">
-                        </form>
                         <!--
                         <form method="POST" action="">
-                            @csrf
-                            <input type="hidden" name="prestation" value="{{$prestation->uuid}}">
+
                             <input type="submit" data-css="non" value="Refuser la commande">
                         </form>
                         -->

@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(
             except: [
                 'basketPayment/*',
+                'message/*',
             ]
         );
 
@@ -31,8 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return null;
             }
+
             $code = $e->status ?? 404;
             error_log($e->getMessage());
+            Log::error($e->getMessage());
             return response()->view('error', [
                 'message' => 'Error occurred!',
                 'code' => $code

@@ -646,4 +646,100 @@ class ProfileController extends Controller
         ]);
 
     }
+
+    function showReviewsMyLocation(Request $request)
+    {
+        $infoProfile = $this->getInfoprofile($request);
+
+        $accountUUID = $infoProfile->data[0]->uuid;
+
+        $locationsUUID = [];
+
+        try {
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'housing?account=' . $accountUUID, [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $locations = json_decode($response->getBody()->getContents());
+            $locations = $locations->data;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos avis"
+            ]);
+        }
+
+        foreach ($locations as $location){
+            $locationsUUID[] = $location->uuid;
+        }
+
+        $allReviews = [];
+
+        try{
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'review?all=true', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ]
+            ]);
+            $reviews = json_decode($response->getBody()->getContents());
+            $reviews = $reviews->data;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos avis"
+            ]);
+        }
+
+        foreach ($reviews as $review){
+            if(in_array($review->housing, $locationsUUID)){
+                $allReviews[] = $review;
+            }
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "reviews_prestations",
+            'stack_css' => 'reviews_prestations',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            'reviews' => $allReviews
+        ]);
+    }
+
+    function showMyLocations(Request $request)
+    {
+        $dataUser = $this->getInfoprofile($request);
+
+        $accountUUID = $dataUser->data[0]->uuid;
+
+        try {
+            $client = new Client();
+            $response = $client->get(env("API_URL") . 'housing?account=' . $accountUUID, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $request->session()->get('token')
+                ]
+            ]);
+
+            $locations = json_decode($response->getBody()->getContents());
+            $locations = $locations->data;
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+            return redirect('/profile', 302, [], false)->withErrors([
+                "error" => "Erreur lors du chargement de vos locations"
+            ]);
+        }
+
+        return view("default", [
+            'file_path' => $this->view_path . "locations",
+            'stack_css' => 'locations_profile',
+            'connected' => true,
+            'profile' => true,
+            'light' => false,
+            'locations' => $locations
+        ]);
+    }
+
 }

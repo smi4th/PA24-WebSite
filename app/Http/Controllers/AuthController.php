@@ -81,6 +81,8 @@ class AuthController extends Controller
                     "error" => "Error when logout"
                 ]);
             }
+
+            return redirect('/login', 302, [], false)->with('success', 'Logout success!');
         }
     }
 

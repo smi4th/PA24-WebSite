@@ -93,6 +93,9 @@
                     </div>
                 </form>
 
+                <button type="submit" class="btn btn-secondary" onclick="window.location.href='/basketPayment/delete'">Supprimer le panier</button>
+                <button type="submit" class="btn btn-outline-dark" onclick="window.location.href='/profile/tickets'">Demande support</button>
+
                 <form action="{{ route('auth.logout') }}">
                     @csrf
                     <input type="submit" value="Déconnexion">

@@ -61,7 +61,7 @@ Route::prefix('/backoffice')->middleware(CheckIfAuth::class,CheckIfStaff::class)
 
 Route::prefix('/travel')->controller(LocationController::class)->middleware(CheckIfAuth::class)->group(function () {
     Route::get('/', 'index');
-    Route::get('/createLocation', 'showCreateLocation');
+    Route::get('/createLocation', 'showCreateLocation')->name('showCreateLocation');
     Route::post('/createLocation', 'doCreateLocation');
     Route::get('/{id}', 'showLocation');
     Route::get('/{id}/delete', 'removeLocation')->middleware(CheckIfStaff::class);
@@ -73,7 +73,7 @@ Route::prefix('/travel')->controller(LocationController::class)->middleware(Chec
 
 Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(PrestationController::class)->group(function () {
     Route::get('/', 'index');
-    Route::get('/createPrestation','createPrestation');
+    Route::get('/createPrestation','createPrestation')->name('listPrestation');
     Route::post('/createPrestation','doCreatePrestation')->name('createPrestation');
     Route::post('/createService','doCreateService')->name('createService');
 
@@ -89,6 +89,7 @@ Route::prefix('/prestations')->middleware(CheckIfAuth::class)->controller(Presta
 
 Route::prefix('/basketPayment')->middleware(CheckIfAuth::class)->controller(StripePaymentController::class)->group(function () {
     Route::get('/', 'checkout');
+    Route::get('/delete','deleteBasket');
     Route::get('/subscription', 'subscription');
     Route::get('/successSubscription', 'successSubscription');
     Route::post('/webhook', 'webhook');
@@ -112,8 +113,15 @@ Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileCon
 
     Route::get('/bills', 'showBills');
 
-    Route::get('/locations', 'showLocations')->middleware([CheckIfType::class.":Traveler"]);
-    Route::get('/locations/reviews', 'showLocation')->middleware([CheckIfType::class.":Traveler"]);
+    Route::prefix('/locations')->middleware([CheckIfType::class.":Loueur"])->group(function () {
+
+        Route::get('/', 'showMyLocations');
+
+        Route::get('/reviews', 'showReviewsMyLocation');
+
+        Route::get('/{any}', 'showMyLocations')->where('any', '.*');
+
+    });
 
     Route::prefix('/prestations')->middleware([CheckIfType::class.":Handyman"])->group(function () {
 
@@ -135,14 +143,19 @@ Route::prefix('/profile')->middleware(CheckIfAuth::class)->controller(ProfileCon
         Route::get('/{id}/delete', 'removeReviews')->middleware(CheckIfStaff::class);
     });
 
+    Route::prefix('/tickets')->middleware(CheckIfAuth::class)->controller(TicketController::class)->group(function () {
+        Route::get('/', 'showDemandSupport');
+        Route::get('/myTickets', 'showMyTickets');
+        Route::get('/update', 'getAllInfo')->name('update_ticket');
+        Route::post('/sendMessage', 'sendMessage')->name('message_ticket');
+        Route::post('/addTicket', 'addTickets');
+    });
+
     Route::get('/{any}','index')->where('any', '.*');
 
 });
 
-Route::prefix('/tickets')->middleware(CheckIfAuth::class)->controller(TicketController::class)->group(function () {
-    Route::get('/', 'showTickets');
-    Route::post('/addTicket', 'addTickets');
-});
+
 
 
 Route::prefix('/planning')->middleware(CheckIfAuth::class)->controller(PlanningController::class)->group(function () {
@@ -152,6 +165,7 @@ Route::prefix('/planning')->middleware(CheckIfAuth::class)->controller(PlanningC
 
 Route::prefix('/message')->middleware(CheckIfAuth::class)->controller(MessageController::class)->group(function () {
     Route::get('/', 'index')->name('message');
+    Route::get('/update', 'getAllMessages')->name('update_message');
     route::post('/send-message', 'sendMessage')->name('send_message');
     Route::get('/{any}','index')->where('any', '.*');
 });

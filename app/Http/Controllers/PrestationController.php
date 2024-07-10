@@ -232,8 +232,7 @@ class PrestationController extends Controller
             ]);
 
         }catch (\Exception $e){
-
-            $this->deleteCurrentAction($request, $currentBasketUUID, $id);
+            $this->deleteCurrentAction($request, $currentBasketUUID, $id,true, $date_start);
             error_log($e->getMessage());
             return redirect('prestations/'.$type.'/'.$id, 302, [], false)->withErrors(['error' => 'Erreur lors de la réservation']);
         }
@@ -271,16 +270,40 @@ class PrestationController extends Controller
 
         }catch (\Exception $e){
 
-            $this->deleteCurrentAction($request, $currentBasketUUID, $id);
+            $this->deleteCurrentAction($request, $currentBasketUUID, $id,true, $date_start);
 
             error_log($e->getMessage());
             return redirect('prestations/'.$type.'/'.$id, 302, [], false)->withErrors(['error' => 'Erreur lors de la réservation']);
         }
+        $this->startDiscussion($request, $serviceAuthor, $accountUuid);
 
         return redirect('prestations/'.$type.'/'.$id, 302, [], false)->with('success', 'Réservation éffectué avec succès');
     }
 
-    private function deleteCurrentAction(Request $request, $basketUUID, $serviceUUID)
+    function startDiscussion(Request $request,$serviceAuthor, $accountUuid)
+    {
+        $client = new Client();
+        $body = [
+            "author" => $accountUuid,
+            "account" => $serviceAuthor,
+            "imgPath" => "NULL",
+            "content" => "[Message automatique] Une réservation a été effectuée pour votre prestation"
+
+        ];
+
+        try{
+            $response = $client->post(env('API_URL') . 'message', [
+                'headers' => [
+                    "Authorization" => "Bearer " . $request->session()->get('token')
+                ],
+                'json' => $body
+            ]);
+        }catch (\Exception $e){
+            error_log($e->getMessage());
+        }
+    }
+
+    private function deleteCurrentAction(Request $request, $basketUUID, $serviceUUID,$dispo = true, $date_start = null)
     {
         error_log("patate");
         $client = new Client();
@@ -292,6 +315,48 @@ class PrestationController extends Controller
             ]);
         }catch (\Exception $e){
             error_log($e->getMessage());
+        }
+
+        if($dispo) {
+            try {
+                $response = $client->get(env('API_URL') . 'services?account=' . $serviceUUID, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+                $service = json_decode($response->getBody()->getContents());
+                $accountUUID = $service->data[0]->account;
+            } catch (\Exception $e) {
+                error_log($e->getMessage());
+            }
+
+            try {
+                $response = $client->get(env('API_URL') . 'disponibility?account=' . $accountUUID, [
+                    'headers' => [
+                        "Authorization" => "Bearer " . $request->session()->get('token')
+                    ]
+                ]);
+
+                $disponibility = json_decode($response->getBody()->getContents());
+                $disponibility = $disponibility->data;
+
+            } catch (\Exception $e) {
+                error_log($e->getMessage());
+            }
+
+            foreach ($disponibility as $dispo) {
+                if ($dispo->start_date == $date_start) {
+                    try {
+                        $response = $client->delete(env('API_URL') . 'disponibility?uuid=' . $dispo->uuid, [
+                            'headers' => [
+                                'Authorization' => 'Bearer ' . $request->session()->get('token')
+                            ]
+                        ]);
+                    } catch (\Exception $e) {
+                        error_log($e->getMessage());
+                    }
+                }
+            }
         }
 
     }
