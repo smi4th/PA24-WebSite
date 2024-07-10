@@ -1,7 +1,24 @@
-FROM httpd:2.4
+FROM php:8.2.19-zts-alpine3.20
+RUN apk update && apk add --no-cache \
+    openssl \
+    zip \
+    unzip \
+    curl \
+    nodejs \
+    npm \
+    openssh \
+    bash
+WORKDIR /app
+COPY . .
+COPY .env.example .env
 
-# Expose the port the app runs in
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install
+RUN composer require dompdf/dompdf
+RUN composer require guzzlehttp/guzzle:^7.0
+RUN composer require league/flysystem-read-only "^3.0"
 EXPOSE 80
-
-# Serve the app
-CMD ["httpd", "-D", "FOREGROUND"]
+RUN php artisan key:generate
+RUN php artisan migrate
+CMD php artisan serve --host=0.0.0.0 --port=80
