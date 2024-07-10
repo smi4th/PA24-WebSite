@@ -4,12 +4,24 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BackOfficeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckIfAuth;
+use App\Http\Middleware\CheckIfStaff;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChatBotController;
 
 Route::get('/', function () {
     return view('landing');
 });
-Route::match(['get','post'],'/botman', [App\Http\Controllers\BotManController::class, 'handle']);
+
+
+Route::middleware(CheckIfStaff::class)->group(function () {
+    Route::get('/chatbot/admin', [ChatBotController::class, 'adminIndex']);
+    Route::post('/chatbot/admin', [ChatBotController::class, 'store']);
+    Route::put('/chatbot/admin', [ChatBotController::class, 'update']);;
+    Route::delete('/chatbot/admin/{uuid}', [ChatBotController::class, 'destroy']);
+});
+
+Route::get( '/chatbot', [ChatBotController::class, 'handle']);
+
 /*
 Route::get('/error',function () {
     return view('error');
