@@ -31,6 +31,9 @@ Route::middleware(CheckIfStaff::class)->group(function () {
     Route::delete('/chatbot/admin/{uuid}', [ChatBotController::class, 'destroy']);
 });
 
+Route::get( '/chatbot', [ChatBotController::class, 'handle']);
+
+
 
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'checkLogin']);
