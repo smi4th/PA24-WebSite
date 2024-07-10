@@ -13,22 +13,10 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TicketController;
-use App\Http\Controllers\ChatBotController;
 
 Route::get('/', function () {
     return view('landing');
 });
-
-
-Route::middleware(CheckIfStaff::class)->group(function () {
-    Route::get('/chatbot/admin', [ChatBotController::class, 'adminIndex']);
-    Route::post('/chatbot/admin', [ChatBotController::class, 'store']);
-    Route::put('/chatbot/admin', [ChatBotController::class, 'update']);;
-    Route::delete('/chatbot/admin/{uuid}', [ChatBotController::class, 'destroy']);
-});
-
-Route::get( '/chatbot', [ChatBotController::class, 'handle']);
-
 /*
 Route::get('/error',function () {
     return view('error');

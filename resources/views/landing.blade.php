@@ -121,102 +121,46 @@
                 </div>
             </div>
 
-            </div>
-        </section>
-        <section>
-            <div class="section_title">
-                <h1>Les profils</h1>
-                <h2>Quelques soient votre profil, nous avons ce qu'il vous faut</h2>
-            </div>
-            <div class="profiles">
-                <div class="profiles_content">
-                    <div class="profile_item">
-                        <img src="{{ asset('/assets/images/bailleurs.png') }}" alt="Paris">
-                        <h3>Bailleurs</h3>
-                    </div>
-                    <div class="profile_item">
-                        <img src="{{ asset('/assets/images/prestataires.png') }}" alt="Lyon">
-                        <h3>Prestataires</h3>
-                    </div>
-                    <div class="profile_item">
-                        <img src="{{ asset('/assets/images/voyageurs.png') }}" alt="Marseille">
-                        <h3>Voyageurs</h3>
-                    </div>
+        </div>
+    </section>
+    <section>
+        <div class="section_title">
+            <h1>Les profils</h1>
+            <h2>Quelques soient votre profil, nous avons ce qu'il vous faut</h2>
+        </div>
+        <div class="profiles">
+            <div class="profiles_content">
+                <div class="profile_item">
+                    <img src="{{ asset('/assets/images/bailleurs.png') }}" alt="Paris">
+                    <h3>Bailleurs</h3>
                 </div>
-            </div>
-        </section>
-        <section>
-            <div class="section_title">
-                <h1>La newsletter</h1>
-                <h2>Pour être tenu à jour des dernières nouveautés et des offres en cours</h2>
-            </div>
-            <div class="newsletter_layout">
-                <div class="newsletter">
-                    <form action="">
-                        <input type="email" name="email" id="email" placeholder="Votre adresse email">
-                        <button type="submit">S'abonner</button>
-                    </form>
+                <div class="profile_item">
+                    <img src="{{ asset('/assets/images/prestataires.png') }}" alt="Lyon">
+                    <h3>Prestataires</h3>
                 </div>
-            </div>
-        </section>
-    </main>
-    <div class="chatbot-button">
-        <button type="button" class="btn btn-primary" id="open-chatbot">
-            <i class="bi bi-chat-dots"></i>
-        </button>
-    </div>
-    <div class="chatbot-interface d-none">
-        <div class="card">
-            <div class="card-header">
-                Chatbot
-                <button type="button" class="btn-close" aria-label="Close" id="close-chatbot"></button>
-            </div>
-            <div class="card-body">
-                <div class="chat-container">
-                    <div class="chat-message"><b>Bot:</b> Bonjour, comment puis-je vous aider ?</div>
+                <div class="profile_item">
+                    <img src="{{ asset('/assets/images/voyageurs.png') }}" alt="Marseille">
+                    <h3>Voyageurs</h3>
                 </div>
-                <textarea class="form-control" placeholder"Entrez votre question..." id="chat-input"></textarea>
-                <button type="button" class="btn btn-primary mt-2" id="send-message">Send</button>
             </div>
         </div>
-    </div>
-    <script>
-        document.getElementById('open-chatbot').addEventListener('click', function() {
-            document.querySelector('.chatbot-interface').classList.remove('d-none');
-        });
-
-        document.getElementById('close-chatbot').addEventListener('click', function() {
-            document.querySelector('.chatbot-interface').classList.add('d-none');
-        });
-
-        document.getElementById('send-message').addEventListener('click', function() {
-        var message = document.getElementById('chat-input').value;
-        var chatContainer = document.querySelector('.chat-container');
-        var newMessage = `<div class="chat-message"><b>Vous:</b> ${message}</div>`;
-        chatContainer.innerHTML += newMessage;
-        document.getElementById('chat-input').value = '';
-
-        fetch(`/chatbot?keyword=${message}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Réponse du chatbot:', data);
-            let message = data.messages[0].text;
-            var botMessage = `<div class="chat-message"><b>Bot:</b> ${message}</div>`;
-            chatContainer.innerHTML += botMessage;
-        })
-        .catch((error) => {
-            console.error('Erreur:', error);
-        });
-    });
-    </script>
-    <x-footer />
-
+    </section>
+    <section>
+        <div class="section_title">
+            <h1>La newsletter</h1>
+            <h2>Pour être tenu à jour des dernières nouveautés et des offres en cours</h2>
+        </div>
+        <div class="newsletter_layout">
+            <div class="newsletter">
+                <form action="">
+                    <input type="email" name="email" id="email" placeholder="Votre adresse email">
+                    <button type="submit">S'abonner</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+<x-footer/>
 </body>
 
 </html>
